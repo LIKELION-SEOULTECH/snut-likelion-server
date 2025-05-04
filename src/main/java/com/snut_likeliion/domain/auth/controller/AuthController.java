@@ -37,4 +37,21 @@ public class AuthController {
         jwtService.setCookie(tokenDto, response);
         return ApiResponse.success("Token Refresh 성공");
     }
+
+    @PostMapping("/email/send")
+    public ApiResponse<Void> sendCertifyEmail(
+            @RequestParam("email") String email
+    ) {
+        authService.sendCertifyEmail(email);
+        return ApiResponse.success("인증 코드 전송 완료");
+    }
+
+    @PostMapping("/email/certify")
+    public ApiResponse<Void> certifyCode(
+            @RequestParam("email") String email,
+            @RequestParam("code") String code
+    ) {
+        authService.certifyCode(email, code);
+        return ApiResponse.success("이메일 인증 성공");
+    }
 }

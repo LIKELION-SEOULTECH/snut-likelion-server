@@ -1,7 +1,7 @@
 package com.snut_likeliion.global.auth.jwt;
 
 import com.snut_likeliion.domain.auth.entity.RefreshToken;
-import com.snut_likeliion.domain.auth.exception.RefreshTokenErrorCode;
+import com.snut_likeliion.domain.auth.exception.AuthErrorCode;
 import com.snut_likeliion.domain.auth.repository.RefreshTokenRepository;
 import com.snut_likeliion.domain.user.entity.User;
 import com.snut_likeliion.domain.user.exception.UserErrorCode;
@@ -79,7 +79,7 @@ public class JwtService {
 
     private SnutLikeLionUser extractSnutLikeLionUserFromRefreshToken(String refreshTokenPayload) {
         RefreshToken findRefreshToken = refreshTokenRepository.findByPayload(refreshTokenPayload)
-                .orElseThrow(() -> new NotFoundException(RefreshTokenErrorCode.NOT_FOUND_REFRESH_TOKEN));
+                .orElseThrow(() -> new NotFoundException(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN));
         User user = userRepository.findByEmail(findRefreshToken.getEmail())
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
         return SnutLikeLionUser.from(UserInfo.from(user));

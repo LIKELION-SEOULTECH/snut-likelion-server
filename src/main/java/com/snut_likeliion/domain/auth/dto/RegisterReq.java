@@ -36,10 +36,10 @@ public class RegisterReq {
     @Size(min = 11, max = 11, message = "연락처 길이가 올바르지 않습니다.")
     private String phoneNumber;
 
-    private boolean isEmailVerified;
+    private Boolean isEmailVerified;
 
     @Builder
-    public RegisterReq(String email, String username, String password, String confirmPassword, String phoneNumber, boolean isEmailVerified) {
+    public RegisterReq(String email, String username, String password, String confirmPassword, String phoneNumber, Boolean isEmailVerified) {
         this.email = email;
         this.username = username;
         this.password = password;
@@ -51,6 +51,11 @@ public class RegisterReq {
     @AssertTrue(message = "비밀번호와 비밀번호 확인이 일치하지 않습니다.")
     public boolean isPasswordMatching() {
         return password != null && password.equals(confirmPassword);
+    }
+
+    @AssertTrue(message = "이메일 인증이 필요합니다.")
+    public boolean isEmailVerified() {
+        return this.isEmailVerified != null && this.isEmailVerified;
     }
 
     public User toEntity(Role role, PasswordEncoder passwordEncoder) {
