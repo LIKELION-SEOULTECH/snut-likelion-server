@@ -25,19 +25,27 @@ public class RegisterReq {
     private String username;
 
     @NotEmpty(message = "비밀번호를 입력해주세요.")
-    @Size(min = 2, max = 20, message = "비밀번호는 2 ~ 20 글자입니다.")
+    @Size(min = 6, max = 20, message = "비밀번호는 6 ~ 20 글자입니다.")
     private String password;
 
     @NotEmpty(message = "비밀번호 확인값을 입력해주세요.")
-    @Size(min = 2, max = 20, message = "비밀번호 확인값은 2 ~ 20 글자입니다.")
+    @Size(min = 6, max = 20, message = "비밀번호 확인값은 6 ~ 20 글자입니다.")
     private String confirmPassword;
 
+    @NotEmpty(message = "연락처를 입력해주세요.")
+    @Size(min = 11, max = 11, message = "연락처 길이가 올바르지 않습니다.")
+    private String phoneNumber;
+
+    private boolean isEmailVerified;
+
     @Builder
-    public RegisterReq(String email, String username, String password, String confirmPassword) {
+    public RegisterReq(String email, String username, String password, String confirmPassword, String phoneNumber, boolean isEmailVerified) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.confirmPassword = confirmPassword;
+        this.phoneNumber = phoneNumber;
+        this.isEmailVerified = isEmailVerified;
     }
 
     @AssertTrue(message = "비밀번호와 비밀번호 확인이 일치하지 않습니다.")
