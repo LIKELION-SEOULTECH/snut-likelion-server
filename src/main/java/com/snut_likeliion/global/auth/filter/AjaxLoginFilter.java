@@ -3,6 +3,8 @@ package com.snut_likeliion.global.auth.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snut_likeliion.domain.user.exception.UserErrorCode;
 import com.snut_likeliion.global.auth.dto.LoginReq;
+import com.snut_likeliion.global.auth.dto.TokenDto;
+import com.snut_likeliion.global.auth.jwt.JwtService;
 import com.snut_likeliion.global.auth.model.AjaxAuthenticationToken;
 import com.snut_likeliion.global.auth.model.SnutLikeLionUser;
 import com.snut_likeliion.global.dto.ApiResponse;
@@ -24,10 +26,12 @@ import java.io.IOException;
 public class AjaxLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private final ObjectMapper objectMapper;
+    private final JwtService jwtService;
 
-    public AjaxLoginFilter(ObjectMapper objectMapper) {
+    public AjaxLoginFilter(ObjectMapper objectMapper, JwtService jwtService) {
         super(new AntPathRequestMatcher("/api/v1/auth/login", "POST"));
         this.objectMapper = objectMapper;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -47,12 +51,12 @@ public class AjaxLoginFilter extends AbstractAuthenticationProcessingFilter {
         response.setCharacterEncoding("UTF-8");
 
         SnutLikeLionUser principal = (SnutLikeLionUser) authResult.getPrincipal();
-//        TokenDto tokenDto = jwtService.doTokenGenerationProcess(principal);
-//        jwtService.setCookie(tokenDto, response);
-//        objectMapper.writeValue(response.getWriter(), tokenDto);
+        TokenDto tokenDto = jwtService.doTokenGenerationProcess(principal);
+        jwtService.setCookie(tokenDto, response);
+        objectMapper.writeValue(response.getWriter(), tokenDto);
 
-        ApiResponse responseDto = ApiResponse.success(principal.getUsername(), "로그인 성공");
-        objectMapper.writeValue(response.getWriter(), responseDto);
+//        ApiResponse responseDto = ApiResponse.success(principal.getUsername(), "로그인 성공");
+//        objectMapper.writeValue(response.getWriter(), responseDto);
 
     }
 

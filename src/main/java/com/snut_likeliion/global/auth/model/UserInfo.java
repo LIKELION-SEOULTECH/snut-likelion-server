@@ -10,16 +10,16 @@ import lombok.NoArgsConstructor;
 public class UserInfo {
     private Long id;
     private String username;
-    private String email;
     private String password;
+    private String email;
     private String role;
 
     @Builder
-    public UserInfo(Long id, String username, String email, String password, boolean isUnivVerified, String role, String provider) {
+    public UserInfo(Long id, String username, String password, String email, String role) {
         this.id = id;
         this.username = username;
-        this.email = email;
         this.password = password;
+        this.email = email;
         this.role = role;
     }
 
@@ -27,8 +27,8 @@ public class UserInfo {
         return UserInfo.builder()
                 .id(user.getId())
                 .username(user.getUsername())
-                .email(user.getEmail())
                 .password(user.getPassword())
+                .email(user.getEmail())
                 .role(user.getRole().name())
                 .build();
     }

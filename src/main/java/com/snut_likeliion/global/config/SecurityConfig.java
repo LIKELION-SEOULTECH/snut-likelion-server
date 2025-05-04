@@ -3,9 +3,12 @@ package com.snut_likeliion.global.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snut_likeliion.global.auth.PermitAllUrls;
 import com.snut_likeliion.global.auth.filter.AjaxLoginFilter;
+import com.snut_likeliion.global.auth.filter.JwtExceptionFilter;
+import com.snut_likeliion.global.auth.filter.JwtVerificationFilter;
 import com.snut_likeliion.global.auth.handlers.CustomAccessDeniedHandler;
 import com.snut_likeliion.global.auth.handlers.CustomAuthenticationEntryPoint;
 import com.snut_likeliion.global.auth.handlers.CustomLogoutSuccessHandler;
+import com.snut_likeliion.global.auth.jwt.JwtService;
 import com.snut_likeliion.global.auth.provider.AjaxAuthenticationProvider;
 import com.snut_likeliion.global.auth.userservice.AjaxUserDetailsService;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +50,9 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomLogoutSuccessHandler logoutSuccessHandler;
+    private final JwtService jwtService;
+    private final JwtVerificationFilter jwtVerificationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -75,6 +81,8 @@ public class SecurityConfig {
                         }
                 )
                 .addFilterAt(ajaxLoginFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtVerificationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtVerificationFilter.class)
                 .exceptionHandling(eh -> eh
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
@@ -85,7 +93,7 @@ public class SecurityConfig {
 
     @Bean
     public AjaxLoginFilter ajaxLoginFilter() {
-        AjaxLoginFilter ajaxLoginFilter = new AjaxLoginFilter(objectMapper);
+        AjaxLoginFilter ajaxLoginFilter = new AjaxLoginFilter(objectMapper, jwtService);
         ajaxLoginFilter.setAuthenticationManager(authenticationManager());
         return ajaxLoginFilter;
     }

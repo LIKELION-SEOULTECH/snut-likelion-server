@@ -32,7 +32,7 @@ public class SnutLikeLionUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.userInfo.getPassword();
+        return userInfo.getPassword();
     }
 
     @Override
