@@ -4,14 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Notice {
 
     @Id
@@ -25,10 +25,7 @@ public class Notice {
     private String content;
 
     @Column(nullable = false)
-    private Boolean pinned;  // 상단 고정 여부 (true: 고정) <- 필요할까??
-
-    @Column(nullable = false)
-    private Long viewCount;
+    private Boolean pinned = false;
 
     @CreatedDate
     @Column(updatable = false)
@@ -37,8 +34,11 @@ public class Notice {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public void increaseViewCount() {
-        this.viewCount++;
+    @Builder
+    private Notice(String title, String content, Boolean pinned) {
+        this.title = title;
+        this.content = content;
+        this.pinned = pinned != null && pinned;
     }
 
     public void update(String title, String content, Boolean pinned) {
