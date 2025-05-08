@@ -1,15 +1,11 @@
 package com.snut_likeliion.domain.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.snut_likeliion.domain.user.entity.Part;
 import com.snut_likeliion.domain.user.entity.Role;
 import com.snut_likeliion.domain.user.entity.User;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
@@ -36,15 +32,28 @@ public class RegisterReq {
     @Size(min = 11, max = 11, message = "연락처 길이가 올바르지 않습니다.")
     private String phoneNumber;
 
+    @NotNull(message = "기수를 입력해주세요.")
+    @Min(value = 1, message = "기수가 올바르지 않습니다.")
+    private int generation;
+
+    @NotNull(message = "파트를 입력해주세요.")
+    private RegisterPart part;
+
+    @NotNull(message = "역할을 입력해주세요.")
+    private RegisterRole role;
+
     private Boolean isEmailVerified;
 
     @Builder
-    public RegisterReq(String email, String username, String password, String confirmPassword, String phoneNumber, Boolean isEmailVerified) {
+    public RegisterReq(String email, String username, String password, String confirmPassword, String phoneNumber, int generation, RegisterPart part, RegisterRole role, Boolean isEmailVerified) {
         this.email = email;
         this.username = username;
         this.password = password;
         this.confirmPassword = confirmPassword;
         this.phoneNumber = phoneNumber;
+        this.generation = generation;
+        this.part = part;
+        this.role = role;
         this.isEmailVerified = isEmailVerified;
     }
 
@@ -58,12 +67,43 @@ public class RegisterReq {
         return this.isEmailVerified != null && this.isEmailVerified;
     }
 
-    public User toEntity(Role role, PasswordEncoder passwordEncoder) {
+    public User toEntity(PasswordEncoder passwordEncoder) {
         return User.builder()
                 .email(this.email)
                 .username(this.username)
+                .phoneNumber(this.phoneNumber)
                 .password(passwordEncoder.encode(this.password))
-                .role(role)
+                .role(Role.valueOf(this.role.name()))
+                .part(Part.valueOf(this.part.name()))
+                .generation(this.generation)
                 .build();
     }
+
+    @RequiredArgsConstructor
+    public enum RegisterRole {
+        @JsonProperty("아기사자")
+        ROLE_USER("아기사자"),
+
+        @JsonProperty("운영진")
+        ROLE_ADMIN("운영진");
+
+        private final String name;
+    }
+
+    @RequiredArgsConstructor
+    public enum RegisterPart {
+        @JsonProperty("기획")
+        PLANNING("기획"),
+        @JsonProperty("디자인")
+        DESIGN("디자인"),
+        @JsonProperty("프론트엔드")
+        FRONTEND("프론트엔드"),
+        @JsonProperty("백엔드")
+        BACKEND("백엔드"),
+        @JsonProperty("AI")
+        AI("AI");
+
+        private final String name;
+    }
+
 }
