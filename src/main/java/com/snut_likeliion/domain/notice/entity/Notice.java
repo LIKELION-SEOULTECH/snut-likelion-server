@@ -1,5 +1,6 @@
 package com.snut_likeliion.domain.notice.entity;
 
+import com.snut_likeliion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -9,16 +10,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Notice {
+public class Notice extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, length = 100)  // 길이 제한 필요??
+    @Column(nullable = false, length = 100)  // 길이 제한 필요한가??
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -26,13 +22,6 @@ public class Notice {
 
     @Column(nullable = false)
     private Boolean pinned = false;
-
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     @Builder
     private Notice(String title, String content, Boolean pinned) {
@@ -47,4 +36,3 @@ public class Notice {
         this.pinned = pinned;
     }
 }
-

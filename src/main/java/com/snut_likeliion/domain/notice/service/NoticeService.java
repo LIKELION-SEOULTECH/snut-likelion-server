@@ -6,6 +6,7 @@ import com.snut_likeliion.domain.notice.dto.NoticeDetailResponse;
 import com.snut_likeliion.domain.notice.dto.NoticeListResponse;
 import com.snut_likeliion.domain.notice.dto.UpdateNoticeRequest;
 import com.snut_likeliion.domain.notice.entity.Notice;
+import com.snut_likeliion.domain.notice.exception.NoticeErrorCode;
 import com.snut_likeliion.domain.notice.repository.NoticeRepository;
 import com.snut_likeliion.global.error.GlobalErrorCode;
 import com.snut_likeliion.global.error.exception.NotFoundException;
@@ -24,11 +25,7 @@ public class NoticeService {
 
     @Transactional
     public Long createNotice(CreateNoticeRequest request) {
-        Notice notice = Notice.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .pinned(Optional.ofNullable(request.getPinned()).orElse(false))
-                .build();
+        Notice notice = request.toEntity();
 
         return noticeRepository.save(notice).getId();
     }
@@ -43,7 +40,7 @@ public class NoticeService {
     @Transactional(readOnly = true)
     public NoticeDetailResponse getNoticeDetail(Long id) {
         Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(GlobalErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NoticeErrorCode.NOT_FOUND));
 
         return NoticeDetailResponse.from(notice);
     }
@@ -51,7 +48,7 @@ public class NoticeService {
     @Transactional
     public void updateNotice(Long id, UpdateNoticeRequest request) {
         Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(GlobalErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NoticeErrorCode.NOT_FOUND));
 
         notice.update(
                 request.getTitle(),
@@ -63,7 +60,7 @@ public class NoticeService {
     @Transactional
     public void deleteNotice(Long id) {
         Notice notice = noticeRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(GlobalErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(NoticeErrorCode.NOT_FOUND));
 
         noticeRepository.delete(notice);
     }

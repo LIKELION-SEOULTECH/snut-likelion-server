@@ -6,7 +6,9 @@ import com.snut_likeliion.domain.notice.dto.NoticeListResponse;
 import com.snut_likeliion.domain.notice.dto.UpdateNoticeRequest;
 import com.snut_likeliion.domain.notice.service.NoticeService;
 import com.snut_likeliion.global.dto.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,27 +22,29 @@ public class NoticeController {
     private final NoticeService noticeService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<Long>> createNotice(@RequestBody CreateNoticeRequest request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<Long> createNotice(
+            @Valid @RequestBody CreateNoticeRequest request) {
+
         Long noticeId = noticeService.createNotice(request);
 
-        return ResponseEntity.ok(ApiResponse.success(noticeId));
+        return ApiResponse.success(noticeId);
     }
 
     @PatchMapping("/{noticeId}")
-    public ResponseEntity<ApiResponse<Void>> updateNotice(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateNotice(
             @PathVariable Long noticeId,
-            @RequestBody UpdateNoticeRequest request) {
+            @Valid @RequestBody UpdateNoticeRequest request) {
 
         noticeService.updateNotice(noticeId, request);
-
-        return ResponseEntity.ok(ApiResponse.success((Void) null));
     }
 
     @DeleteMapping("/{noticeId}")
-    public ResponseEntity<ApiResponse<Void>> deleteNotice(@PathVariable Long noticeId) {
-        noticeService.deleteNotice(noticeId);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteNotice(@PathVariable Long noticeId) {
 
-        return ResponseEntity.ok(ApiResponse.success((Void) null));
+        noticeService.deleteNotice(noticeId);
     }
 
     @GetMapping
