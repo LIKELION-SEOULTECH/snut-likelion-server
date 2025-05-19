@@ -83,9 +83,10 @@ public class RegisterReq {
     public enum RegisterRole {
         @JsonProperty("아기사자")
         ROLE_USER("아기사자"),
-
         @JsonProperty("운영진")
-        ROLE_ADMIN("운영진");
+        ROLE_MANAGER("운영진"),
+        @JsonProperty("대표")
+        ROLE_ADMIN("대표");
 
         private final String name;
     }
