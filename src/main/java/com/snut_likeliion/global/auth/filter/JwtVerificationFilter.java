@@ -1,7 +1,7 @@
 package com.snut_likeliion.global.auth.filter;
 
 import com.snut_likeliion.global.auth.jwt.JwtService;
-import com.snut_likeliion.global.auth.model.AjaxAuthenticationToken;
+import com.snut_likeliion.global.auth.model.RestAuthenticationToken;
 import com.snut_likeliion.global.auth.model.SnutLikeLionUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -46,7 +46,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
     private void setAuthenticationToContext(String token) {
         SnutLikeLionUser snutLikeLionUser = jwtService.getPrincipal(token);
-        AjaxAuthenticationToken authentication = AjaxAuthenticationToken.authenticated(snutLikeLionUser);
+        RestAuthenticationToken authentication = RestAuthenticationToken.authenticated(snutLikeLionUser);
         SecurityContext securityContext = SecurityContextHolder.getContextHolderStrategy().createEmptyContext();
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.getContextHolderStrategy().setContext(securityContext);

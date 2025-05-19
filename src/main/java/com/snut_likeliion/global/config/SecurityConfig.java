@@ -2,33 +2,29 @@ package com.snut_likeliion.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snut_likeliion.global.auth.PermitAllUrls;
-import com.snut_likeliion.global.auth.filter.AjaxLoginFilter;
 import com.snut_likeliion.global.auth.filter.JwtExceptionFilter;
 import com.snut_likeliion.global.auth.filter.JwtVerificationFilter;
+import com.snut_likeliion.global.auth.filter.RestLoginFilter;
 import com.snut_likeliion.global.auth.handlers.CustomAccessDeniedHandler;
 import com.snut_likeliion.global.auth.handlers.CustomAuthenticationEntryPoint;
 import com.snut_likeliion.global.auth.handlers.CustomLogoutSuccessHandler;
 import com.snut_likeliion.global.auth.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.annotation.web.configurers.RememberMeConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.context.NullSecurityContextRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -45,10 +41,13 @@ public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        builder.authenticationProvider(authenticationProvider);
         AuthenticationManager authenticationManager = builder.build();
 
         http
@@ -57,6 +56,8 @@ public class SecurityConfig {
                 .httpBasic(HttpBasicConfigurer::disable)
                 .formLogin(FormLoginConfigurer::disable)
                 .logout(logout -> logout
+                        .clearAuthentication(true)
+                        .invalidateHttpSession(true)
                         .logoutRequestMatcher(new AntPathRequestMatcher("/api/v1/auth/logout", "POST"))
                         .logoutSuccessHandler(new CustomLogoutSuccessHandler(jwtService))
                 )
@@ -66,7 +67,6 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .securityContext(securityContext -> securityContext.securityContextRepository(new NullSecurityContextRepository()))
                 .authenticationManager(authenticationManager)
                 .authorizeHttpRequests(
                         authz -> {
@@ -74,11 +74,13 @@ public class SecurityConfig {
                                 authz.requestMatchers(url.getMethod(), url.getUrl()).permitAll();
                             });
 
-                            authz.anyRequest().authenticated();
+                            authz
+                                    .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
+                                    .anyRequest().authenticated();
                         }
                 )
-                .addFilterAt(ajaxLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtVerificationFilter(jwtService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(restLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtVerificationFilter(jwtService), RestLoginFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(objectMapper), JwtVerificationFilter.class)
                 .exceptionHandling(eh -> eh
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint(objectMapper))
@@ -88,16 +90,12 @@ public class SecurityConfig {
         return http.build();
     }
 
-    public AjaxLoginFilter ajaxLoginFilter(AuthenticationManager authenticationManager) {
-        AjaxLoginFilter ajaxLoginFilter = new AjaxLoginFilter(objectMapper, jwtService);
-        ajaxLoginFilter.setAuthenticationManager(authenticationManager);
-        return ajaxLoginFilter;
+    private RestLoginFilter restLoginFilter(AuthenticationManager authenticationManager) {
+        RestLoginFilter restLoginFilter = new RestLoginFilter(objectMapper, jwtService);
+        restLoginFilter.setAuthenticationManager(authenticationManager);
+        return restLoginFilter;
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     protected CorsConfigurationSource corsConfigurationSource() {
@@ -111,11 +109,4 @@ public class SecurityConfig {
         return source;
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) ->
-                web.ignoring()
-                        .requestMatchers("/static/favicon.ico")
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-    }
 }
