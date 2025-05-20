@@ -1,21 +1,19 @@
 package com.snut_likeliion.domain.notice.service;
 
 
-import com.snut_likeliion.domain.notice.dto.CreateNoticeRequest;
-import com.snut_likeliion.domain.notice.dto.NoticeDetailResponse;
-import com.snut_likeliion.domain.notice.dto.NoticeListResponse;
-import com.snut_likeliion.domain.notice.dto.UpdateNoticeRequest;
+import com.snut_likeliion.domain.notice.dto.*;
 import com.snut_likeliion.domain.notice.entity.Notice;
 import com.snut_likeliion.domain.notice.exception.NoticeErrorCode;
 import com.snut_likeliion.domain.notice.repository.NoticeRepository;
-import com.snut_likeliion.global.error.GlobalErrorCode;
 import com.snut_likeliion.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,9 +30,25 @@ public class NoticeService {
 
     @Transactional(readOnly = true)
     public List<NoticeListResponse> getNoticeList() {
-        return noticeRepository.findAll().stream()
-                .map(NoticeListResponse::from)
-                .toList();
+        // page = 0, size = Integer.MAX_VALUE, keyword = null
+        NoticePageResponse pageResponse = getNoticePage(0, Integer.MAX_VALUE, null);
+
+        return pageResponse.getContent();
+    }
+
+    @Transactional(readOnly = true)
+    public NoticePageResponse getNoticePage(int page, int size, String keyword) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Notice> noticePage = (keyword == null || keyword.isBlank())
+                ? noticeRepository.findAllByOrderByPinnedDescUpdatedAtDesc(pageable)
+                : noticeRepository.findByTitleContainingIgnoreCaseOrderByPinnedDescUpdatedAtDesc(keyword, pageable);
+
+        List<NoticeListResponse> content = noticePage.getContent()
+                                                     .stream()
+                                                     .map(NoticeListResponse::from)
+                                                     .toList();
+
+        return NoticePageResponse.of(content, noticePage);
     }
 
     @Transactional(readOnly = true)

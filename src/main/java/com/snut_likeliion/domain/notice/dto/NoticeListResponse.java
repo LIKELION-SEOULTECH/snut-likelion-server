@@ -7,20 +7,14 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
 public class NoticeListResponse {
 
     private Long noticeId;
     private String title;
     private Boolean pinned;
+    private LocalDateTime createdAt;  // 이걸 다시 추가해야 하나?
     private LocalDateTime updatedAt;
-
-    @Builder
-    public NoticeListResponse(Long noticeId, String title, Boolean pinned, LocalDateTime updatedAt) {
-        this.noticeId = noticeId;
-        this.title = title;
-        this.pinned = pinned;
-        this.updatedAt = updatedAt;
-    }
 
     public static NoticeListResponse from(Notice notice) {
 
@@ -28,6 +22,7 @@ public class NoticeListResponse {
                 .noticeId(notice.getId())
                 .title(notice.getTitle())
                 .pinned(notice.getPinned())
+                .createdAt(notice.getCreatedAt())
                 .updatedAt(notice.getUpdatedAt())
                 .build();
     }

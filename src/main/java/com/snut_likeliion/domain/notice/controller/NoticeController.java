@@ -1,9 +1,6 @@
 package com.snut_likeliion.domain.notice.controller;
 
-import com.snut_likeliion.domain.notice.dto.CreateNoticeRequest;
-import com.snut_likeliion.domain.notice.dto.NoticeDetailResponse;
-import com.snut_likeliion.domain.notice.dto.NoticeListResponse;
-import com.snut_likeliion.domain.notice.dto.UpdateNoticeRequest;
+import com.snut_likeliion.domain.notice.dto.*;
 import com.snut_likeliion.domain.notice.service.NoticeService;
 import com.snut_likeliion.global.dto.ApiResponse;
 import jakarta.validation.Valid;
@@ -11,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/notices")
@@ -48,16 +43,17 @@ public class NoticeController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<NoticeListResponse>>> getNotices() {
-        List<NoticeListResponse> responseList = noticeService.getNoticeList();
+    public ApiResponse<NoticePageResponse> getNoticePage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String keyword) {
 
-        return ResponseEntity.ok(ApiResponse.success(responseList));
+        return ApiResponse.success(noticeService.getNoticePage(page, size, keyword));
     }
 
     @GetMapping("/{noticeId}")
-    public ResponseEntity<ApiResponse<NoticeDetailResponse>> getNotice(@PathVariable Long noticeId) {
-        NoticeDetailResponse response = noticeService.getNoticeDetail(noticeId);
+    public ApiResponse<NoticeDetailResponse> getNotice(@PathVariable Long noticeId) {
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ApiResponse.success(noticeService.getNoticeDetail(noticeId));
     }
 }
