@@ -5,7 +5,7 @@ import com.snut_likeliion.domain.user.exception.UserErrorCode;
 import com.snut_likeliion.global.auth.dto.LoginReq;
 import com.snut_likeliion.global.auth.dto.TokenDto;
 import com.snut_likeliion.global.auth.jwt.JwtService;
-import com.snut_likeliion.global.auth.model.AjaxAuthenticationToken;
+import com.snut_likeliion.global.auth.model.RestAuthenticationToken;
 import com.snut_likeliion.global.auth.model.SnutLikeLionUser;
 import com.snut_likeliion.global.dto.ApiResponse;
 import com.snut_likeliion.global.error.GlobalErrorCode;
@@ -23,12 +23,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 
-public class AjaxLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class RestLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
 
-    public AjaxLoginFilter(ObjectMapper objectMapper, JwtService jwtService) {
+    public RestLoginFilter(ObjectMapper objectMapper, JwtService jwtService) {
         super(new AntPathRequestMatcher("/api/v1/auth/login", "POST"));
         this.objectMapper = objectMapper;
         this.jwtService = jwtService;
@@ -37,7 +37,7 @@ public class AjaxLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         LoginReq loginReq = objectMapper.readValue(request.getReader(), LoginReq.class);
-        AjaxAuthenticationToken unauthenticated = AjaxAuthenticationToken.unauthenticated(
+        RestAuthenticationToken unauthenticated = RestAuthenticationToken.unauthenticated(
                 loginReq.getEmail(),
                 loginReq.getPassword()
         );

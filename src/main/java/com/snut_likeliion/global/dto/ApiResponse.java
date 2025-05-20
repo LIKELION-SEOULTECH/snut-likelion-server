@@ -21,7 +21,7 @@ public class ApiResponse<T> {
 
     private final static String SUCCESS_CODE = "OK";
 
-    public static ApiResponse success(String message) {
+    public static ApiResponse<Object> success(String message) {
         return ApiResponse.builder()
                 .code(SUCCESS_CODE)
                 .message(message)

@@ -1,5 +1,7 @@
 package com.snut_likeliion.domain.auth.controller;
 
+import com.snut_likeliion.domain.auth.dto.ChangePasswordRequest;
+import com.snut_likeliion.domain.auth.dto.FindPasswordRequest;
 import com.snut_likeliion.domain.auth.dto.RegisterReq;
 import com.snut_likeliion.domain.auth.service.AuthService;
 import com.snut_likeliion.global.auth.dto.TokenDto;
@@ -23,13 +25,13 @@ public class AuthController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Void> register(@RequestBody @Valid RegisterReq req) {
+    public ApiResponse<Object> register(@RequestBody @Valid RegisterReq req) {
         authService.register(req);
         return ApiResponse.success("회원가입 성공");
     }
 
     @GetMapping("/refresh")
-    public ApiResponse<Void> refresh(
+    public ApiResponse<Object> refresh(
             HttpServletResponse response,
             @RequestHeader(value = REFRESH_TOKEN_HEADER) String bearerRefreshToken
     ) {
@@ -39,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/email/send")
-    public ApiResponse<Void> sendCertifyEmail(
+    public ApiResponse<Object> sendCertifyEmail(
             @RequestParam("email") String email
     ) {
         authService.sendCertifyEmail(email);
@@ -47,11 +49,27 @@ public class AuthController {
     }
 
     @PostMapping("/email/certify")
-    public ApiResponse<Void> certifyCode(
+    public ApiResponse<Object> certifyCode(
             @RequestParam("email") String email,
             @RequestParam("code") String code
     ) {
         authService.certifyCode(email, code);
         return ApiResponse.success("이메일 인증 성공");
+    }
+
+    @PostMapping("/password/find")
+    public ApiResponse<Object> sendPasswordEmail(
+            @RequestBody @Valid FindPasswordRequest req
+    ) {
+        authService.sendFindPasswordEmail(req);
+        return ApiResponse.success("비밀번호 찾기 메일 전송 완료");
+    }
+
+    @PatchMapping("/password/change")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changePassword(
+            @RequestBody @Valid ChangePasswordRequest req
+    ) {
+        authService.changePassword(req);
     }
 }
