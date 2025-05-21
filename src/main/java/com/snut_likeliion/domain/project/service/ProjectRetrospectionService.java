@@ -10,8 +10,10 @@ import com.snut_likeliion.domain.project.infra.ProjectRepository;
 import com.snut_likeliion.domain.project.infra.ProjectRetrospectionRepository;
 import com.snut_likeliion.domain.user.entity.User;
 import com.snut_likeliion.domain.user.repository.UserRepository;
+import com.snut_likeliion.global.auth.model.UserInfo;
 import com.snut_likeliion.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +46,8 @@ public class ProjectRetrospectionService {
     }
 
     @Transactional
-    public void modify(Long retrospectionId, UpdateRetrospectionRequest req) {
+    @PreAuthorize("@authChecker.isMyRetrospection(#loginUser, #retrospectionId)")
+    public void modify(UserInfo loginUser, Long retrospectionId, UpdateRetrospectionRequest req) {
         ProjectRetrospection projectRetrospection = projectRetrospectionRepository.findById(retrospectionId)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_RETROSPECTION));
 
@@ -52,7 +55,8 @@ public class ProjectRetrospectionService {
     }
 
     @Transactional
-    public void remove(Long retrospectionId) {
+    @PreAuthorize("@authChecker.isMyRetrospection(#loginUser, #retrospectionId)")
+    public void remove(UserInfo loginUser, Long retrospectionId) {
         ProjectRetrospection projectRetrospection = projectRetrospectionRepository.findById(retrospectionId)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_RETROSPECTION));
         projectRetrospectionRepository.delete(projectRetrospection);

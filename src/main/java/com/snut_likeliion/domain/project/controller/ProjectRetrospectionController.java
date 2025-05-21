@@ -42,26 +42,24 @@ public class ProjectRetrospectionController {
         );
     }
 
-    // TODO: authChecker
     @PatchMapping("/{retrospectionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyProjectRetrospection(
-//            @AuthenticationPrincipal SnutLikeLionUser writer,
+            @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId,
             @PathVariable("retrospectionId") Long retrospectionId,
             @RequestBody @Valid UpdateRetrospectionRequest req
     ) {
-        projectRetrospectionService.modify(retrospectionId, req);
+        projectRetrospectionService.modify(loginUser.getUserInfo(), retrospectionId, req);
     }
 
-    // TODO: authChecker
     @DeleteMapping("/{retrospectionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProjectRetrospection(
-//            @AuthenticationPrincipal SnutLikeLionUser writer,
+            @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId,
             @PathVariable("retrospectionId") Long retrospectionId
     ) {
-        projectRetrospectionService.remove(retrospectionId);
+        projectRetrospectionService.remove(loginUser.getUserInfo(), retrospectionId);
     }
 }
