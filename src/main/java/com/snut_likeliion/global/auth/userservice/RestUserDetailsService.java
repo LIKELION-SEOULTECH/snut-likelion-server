@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AjaxUserDetailsService implements UserDetailsService {
+public class RestUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
