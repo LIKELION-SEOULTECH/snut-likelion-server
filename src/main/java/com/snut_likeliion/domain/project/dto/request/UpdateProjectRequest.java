@@ -1,6 +1,8 @@
 package com.snut_likeliion.domain.project.dto.request;
 
 import com.snut_likeliion.domain.project.entity.ProjectCategory;
+import com.snut_likeliion.domain.project.exception.ProjectErrorCode;
+import com.snut_likeliion.global.error.exception.BadRequestException;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +23,19 @@ public class UpdateProjectRequest {
 
     @Builder
     public UpdateProjectRequest(String name, String intro, String description, Integer generation, List<String> keywords, ProjectCategory category, List<MultipartFile> newImages, List<Long> members) {
+        boolean allNull = name == null
+                && intro == null
+                && description == null
+                && generation == null
+                && (keywords == null || keywords.isEmpty())
+                && category == null
+                && (newImages == null || newImages.isEmpty())
+                && (members == null || members.isEmpty());
+
+        if (allNull) {
+            throw new BadRequestException(ProjectErrorCode.UPDATE_BAD_REQUEST);
+        }
+
         this.name = name;
         this.intro = intro;
         this.description = description;

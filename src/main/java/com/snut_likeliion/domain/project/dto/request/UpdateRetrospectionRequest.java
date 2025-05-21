@@ -1,5 +1,6 @@
 package com.snut_likeliion.domain.project.dto.request;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateRetrospectionRequest {
 
+    @NotEmpty(message = "내용을 입력해주세요.")
     private String content;
 
     public UpdateRetrospectionRequest(String content) {
