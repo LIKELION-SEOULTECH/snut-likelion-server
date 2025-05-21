@@ -18,6 +18,10 @@ public class ProjectKeyword extends BaseEntity {
     @JoinColumn(name = "project_id", referencedColumnName = "id")
     private Project project;
 
+    public ProjectKeyword(String name) {
+        this.name = name;
+    }
+
     public void setProject(Project project) {
         this.project = project;
     }

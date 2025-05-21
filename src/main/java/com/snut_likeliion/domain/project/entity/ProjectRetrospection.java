@@ -4,6 +4,7 @@ import com.snut_likeliion.domain.user.entity.User;
 import com.snut_likeliion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,12 +25,26 @@ public class ProjectRetrospection extends BaseEntity {
     @JoinColumn(name = "project_id", referencedColumnName = "id")
     private Project project;
 
+    @Builder
+    public ProjectRetrospection(String content, User writer, Project project) {
+        this.content = content;
+        this.writer = writer;
+        this.project = project;
+    }
+
+    public static ProjectRetrospection of(String content, User writer, Project project) {
+        return ProjectRetrospection.builder()
+                .content(content)
+                .writer(writer)
+                .project(project)
+                .build();
+    }
+
     public void setProject(Project project) {
         this.project = project;
     }
 
-    public void setWriter(User writer) {
-        this.writer = writer;
+    public void updateContent(String content) {
+        this.content = content;
     }
-
 }

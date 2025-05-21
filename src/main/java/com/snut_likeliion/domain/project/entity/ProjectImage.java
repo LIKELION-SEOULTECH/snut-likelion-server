@@ -3,6 +3,7 @@ package com.snut_likeliion.domain.project.entity;
 import com.snut_likeliion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,10 +14,10 @@ import lombok.NoArgsConstructor;
 public class ProjectImage extends BaseEntity {
 
     @Column(nullable = false)
-    private String imageName;
+    private String originalName;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String imageUrl;
+    private String storedName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", referencedColumnName = "id")
@@ -26,4 +27,16 @@ public class ProjectImage extends BaseEntity {
         this.project = project;
     }
 
+    @Builder
+    public ProjectImage(String originalName, String storedName) {
+        this.originalName = originalName;
+        this.storedName = storedName;
+    }
+
+    public static ProjectImage of(String originalName, String storedName) {
+        return ProjectImage.builder()
+                .originalName(originalName)
+                .storedName(storedName)
+                .build();
+    }
 }

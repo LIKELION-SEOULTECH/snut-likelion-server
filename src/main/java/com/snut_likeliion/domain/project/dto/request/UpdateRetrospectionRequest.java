@@ -10,4 +10,7 @@ public class UpdateRetrospectionRequest {
 
     private String content;
 
+    public UpdateRetrospectionRequest(String content) {
+        this.content = content;
+    }
 }
