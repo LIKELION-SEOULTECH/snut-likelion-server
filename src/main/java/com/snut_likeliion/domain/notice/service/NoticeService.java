@@ -29,14 +29,6 @@ public class NoticeService {
     }
 
     @Transactional(readOnly = true)
-    public List<NoticeListResponse> getNoticeList() {
-        // page = 0, size = Integer.MAX_VALUE, keyword = null
-        NoticePageResponse pageResponse = getNoticePage(0, Integer.MAX_VALUE, null);
-
-        return pageResponse.getContent();
-    }
-
-    @Transactional(readOnly = true)
     public NoticePageResponse getNoticePage(int page, int size, String keyword) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Notice> noticePage = (keyword == null || keyword.isBlank())
