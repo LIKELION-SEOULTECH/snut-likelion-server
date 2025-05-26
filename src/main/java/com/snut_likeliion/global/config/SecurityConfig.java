@@ -76,7 +76,6 @@ public class SecurityConfig {
                             });
 
                             authz
-                                    .requestMatchers("/css/**", "/images/**", "/js/**", "/favicon.*", "/*/icon-*").permitAll()
                                     .anyRequest().authenticated();
                         }
                 )
