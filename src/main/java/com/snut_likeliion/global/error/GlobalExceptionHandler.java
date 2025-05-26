@@ -6,6 +6,7 @@ import com.snut_likeliion.global.error.exception.SnutLikeLionException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,7 +19,14 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.fail(GlobalErrorCode.FORBIDDEN));
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ApiResponse> handle404(NoHandlerFoundException e) {
         log.info("Not Found Exception: {}", e.getMessage());
         return ResponseEntity
