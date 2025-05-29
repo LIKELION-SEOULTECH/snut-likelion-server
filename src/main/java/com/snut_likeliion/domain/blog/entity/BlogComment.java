@@ -30,7 +30,7 @@ public class BlogComment extends BaseEntity {
     @Column(nullable = false)
     private String content;
 
-    @Builder(builderMethodName = "createBuilder")
+    @Builder
     private BlogComment(BlogPost post, User author, BlogComment parent, String content) {
         this.post = post;
         this.author = author;

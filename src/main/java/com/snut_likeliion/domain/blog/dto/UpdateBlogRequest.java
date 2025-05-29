@@ -2,18 +2,15 @@ package com.snut_likeliion.domain.blog.dto;
 
 import com.snut_likeliion.domain.blog.entity.BlogPost;
 import com.snut_likeliion.domain.blog.entity.Category;
-import com.snut_likeliion.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
-public class CreateBlogRequest {
+public class UpdateBlogRequest {
 
     @NotBlank(message = "제목을 입력해주세요.")
     private String title;
@@ -54,12 +51,7 @@ public class CreateBlogRequest {
         this.taggedMemberIds = taggedMemberIds;
     }
 
-    public BlogPost toEntity(User author) {
-        return BlogPost.builder()
-                .title(title)
-                .content(content)
-                .category(category)
-                .author(author)
-                .build();
+    public void applyTo(BlogPost post) {
+        post.update(title, content, category);
     }
 }

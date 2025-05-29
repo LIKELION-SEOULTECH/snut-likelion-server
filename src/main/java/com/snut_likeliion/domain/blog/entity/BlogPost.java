@@ -8,7 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -32,6 +34,13 @@ public class BlogPost extends BaseEntity {
     @JoinColumn(name = "author_id")
     private User author;
 
+    @OneToMany(
+            mappedBy = "post",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<BlogImage> images = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
             name = "blog_post_tag",
@@ -40,23 +49,33 @@ public class BlogPost extends BaseEntity {
     )
     private Set<User> taggedMembers = new HashSet<>();
 
-    public void addTage(User user) {
+    public void addTag(User user) {
         taggedMembers.add(user);
     }
 
-    @Builder(builderMethodName = "createBuilder")
-    private BlogPost(String title, String content, User author) { // ★ 타입 변경
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category;
+
+    @Builder
+    private BlogPost(String title, String content, User author, Category category) { // ★ 타입 변경
         this.title = title;
         this.content = content;
         this.author = author;
+        this.category = category;
     }
 
     public void changeThumbnail(String url) {
         this.thumbnailUrl = url;
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content, Category category) {
         this.title = title;
         this.content = content;
+        this.category = category;
+    }
+
+    public void setUser(User user){
+        this.author = user;
     }
 }
