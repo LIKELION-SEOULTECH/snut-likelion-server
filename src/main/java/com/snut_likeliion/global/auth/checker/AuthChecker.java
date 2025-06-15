@@ -30,4 +30,8 @@ public class AuthChecker {
     private boolean isWriter(UserInfo user, ProjectRetrospection retrospection) {
         return retrospection.getWriter().getId().equals(user.getId());
     }
+
+    public boolean isMe(UserInfo userInfo, Long memberId) {
+        return userInfo.getId().equals(memberId) || this.hasManagerAuthority(userInfo);
+    }
 }

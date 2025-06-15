@@ -1,6 +1,6 @@
 package com.snut_likeliion.domain.project.entity;
 
-import com.snut_likeliion.domain.user.entity.User;
+import com.snut_likeliion.domain.user.entity.LionInfo;
 import com.snut_likeliion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -14,15 +14,19 @@ import lombok.NoArgsConstructor;
 public class ProjectParticipation extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", referencedColumnName = "id")
-    private User member;
+    @JoinColumn(name = "likeLionInfo_id", referencedColumnName = "id")
+    private LionInfo lionInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", referencedColumnName = "id")
     private Project project;
 
-    public ProjectParticipation(User member, Project project) {
-        this.member = member;
+    public ProjectParticipation(LionInfo lionInfo, Project project) {
+        this.lionInfo = lionInfo;
         this.project = project;
+    }
+
+    public void setLionInfo(LionInfo lionInfo) {
+        this.lionInfo = lionInfo;
     }
 }

@@ -71,4 +71,22 @@ public class LocalFileProvider implements FileProvider {
             throw new IllegalStateException("파일 저장 실패: " + filename, ex);
         }
     }
+
+    @Override
+    public String extractImageName(String imageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            throw new BadRequestException(FileErrorCode.INVALID_IMAGE_URL);
+        }
+        String[] parts = imageUrl.split("/");
+        if (parts.length == 0) {
+            throw new BadRequestException(FileErrorCode.INVALID_IMAGE_URL);
+        }
+
+        return parts[parts.length - 1];
+    }
+
+    @Override
+    public String buildImageUrl(String storedFileName) {
+        return String.format("http://localhost:8080/api/v1/images?imageName=%s", storedFileName);
+    }
 }

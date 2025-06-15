@@ -11,4 +11,7 @@ public interface FileProvider {
 
     String storeFile(MultipartFile file);
 
+    String extractImageName(String imageUrl);
+
+    String buildImageUrl(String storedFileName);
 }

@@ -1,6 +1,7 @@
 package com.snut_likeliion.domain.project.dto.response;
 
 import com.snut_likeliion.domain.project.entity.ProjectRetrospection;
+import com.snut_likeliion.domain.user.entity.LionInfo;
 import com.snut_likeliion.domain.user.entity.Part;
 import com.snut_likeliion.domain.user.entity.User;
 import lombok.AccessLevel;
@@ -45,10 +46,11 @@ public class RetrospectionResponse {
         }
 
         public static Writer from(User writer) {
+            LionInfo currentLionInfo = writer.getLionInfos().get(0);
             return Writer.builder()
                     .id(writer.getId())
                     .name(writer.getUsername())
-                    .part(writer.getPart())
+                    .part(currentLionInfo.getPart())
                     .build();
         }
     }

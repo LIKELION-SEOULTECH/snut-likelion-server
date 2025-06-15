@@ -35,6 +35,9 @@ public class JwtService {
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
+    @Value("${snut.likelion.current-generation}")
+    private int currentGeneration;
+
     private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -82,7 +85,7 @@ public class JwtService {
                 .orElseThrow(() -> new NotFoundException(AuthErrorCode.NOT_FOUND_REFRESH_TOKEN));
         User user = userRepository.findByEmail(findRefreshToken.getEmail())
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
-        return SnutLikeLionUser.from(UserInfo.from(user));
+        return SnutLikeLionUser.from(UserInfo.from(user, currentGeneration));
     }
 
     @Transactional
