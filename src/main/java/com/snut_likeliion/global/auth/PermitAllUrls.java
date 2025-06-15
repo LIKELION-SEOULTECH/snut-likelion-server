@@ -24,6 +24,9 @@ public enum PermitAllUrls {
     GET_PROJECT("/api/v1/projects/{projectId}", GET),
     GET_PROJECT_RETROSPECTIONS("/api/v1/projects/{projectId}/retrospection", GET),
     GET_PROJECT_IMAGE("/api/v1/projects/{projectId}/images*", GET),
+    GET_IMAGE("/api/v1/images*", GET),
+    GET_MEMBERS("/api/v1/members", GET),
+    GET_MEMBER_DETAILS("/api/v1/members/{memberId}", GET),
     ;
 
     private final String url;

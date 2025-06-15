@@ -55,9 +55,10 @@ public class ProjectService {
 
     private void connectParticipants(List<Long> members, Project project) {
         List<ProjectParticipation> participants = members.stream()
-                .map(memberId -> userRepository.findById(memberId).
-                        orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PARTICIPANT)))
-                .map(member -> new ProjectParticipation(member, project))
+                .map(memberId ->
+                        userRepository.findById(memberId)
+                                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PARTICIPANT)))
+                .map(user -> new ProjectParticipation(user.getLionInfos().get(0), project))
                 .toList();
         project.setParticipants(participants);
         projectParticipationRepository.saveAll(participants);
@@ -101,6 +102,8 @@ public class ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
 
+        project.update(req.getName(), req.getIntro(), req.getDescription(), req.getGeneration(), req.getCategory());
+
         if (req.getKeywords() != null && !req.getKeywords().isEmpty()) {
             project.getKeywords().clear();
             this.connectKeywords(req.getKeywords(), project);
@@ -112,8 +115,6 @@ public class ProjectService {
         }
 
         this.connectProjectImages(req.getNewImages(), project);
-
-        project.update(req.getName(), req.getIntro(), req.getDescription(), req.getGeneration(), req.getCategory());
     }
 
     @Transactional

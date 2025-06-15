@@ -7,8 +7,7 @@ import com.snut_likeliion.domain.auth.entity.CertificationToken;
 import com.snut_likeliion.domain.auth.exception.AuthErrorCode;
 import com.snut_likeliion.domain.auth.provider.MailSender;
 import com.snut_likeliion.domain.auth.repository.CertificationTokenRepository;
-import com.snut_likeliion.domain.auth.repository.GenerationRepository;
-import com.snut_likeliion.domain.user.entity.Generation;
+import com.snut_likeliion.domain.user.entity.Part;
 import com.snut_likeliion.domain.user.entity.User;
 import com.snut_likeliion.domain.user.exception.UserErrorCode;
 import com.snut_likeliion.domain.user.repository.UserRepository;
@@ -16,6 +15,7 @@ import com.snut_likeliion.global.error.exception.BadRequestException;
 import com.snut_likeliion.global.error.exception.ExistingResourceException;
 import com.snut_likeliion.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +27,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthService {
 
+    @Value("${snut.likelion.current-generation}")
+    private int currentGeneration;
+
     private final UserRepository userRepository;
     private final CertificationTokenRepository certificationTokenRepository;
-    private final GenerationRepository generationRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailSender mailSender;
 
@@ -37,8 +39,10 @@ public class AuthService {
     public void register(RegisterReq req) {
         boolean isExists = userRepository.existsByEmailOrUsername(req.getEmail(), req.getUsername());
         if (isExists) throw new ExistingResourceException(UserErrorCode.EXISTING_USER);
-        User user = userRepository.save(req.toEntity(passwordEncoder));
-        generationRepository.save(Generation.of(user.getId(), user.getGeneration()));
+        User user = req.toEntity(passwordEncoder);
+        // 임시) 회원가입 시 현재 기수로 동아리 활동 정보 생성
+        user.generateCurrentLionInfo(currentGeneration, Part.BACKEND);
+        userRepository.save(user);
     }
 
     @Transactional

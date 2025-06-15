@@ -51,7 +51,7 @@ public class ProjectDetailResponse {
                 .members(
                         project.getParticipations().stream()
                                 .map(projectParticipation -> {
-                                    User member = projectParticipation.getMember(); // TODO: N+1
+                                    User member = projectParticipation.getLionInfo().getUser(); // TODO: N+1
                                     return Participant.from(member);
                                 })
                                 .toList()

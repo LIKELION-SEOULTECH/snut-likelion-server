@@ -1,5 +1,7 @@
 package com.snut_likeliion.global.auth.model;
 
+import com.snut_likeliion.domain.user.entity.LionInfo;
+import com.snut_likeliion.domain.user.entity.Role;
 import com.snut_likeliion.domain.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,13 +25,23 @@ public class UserInfo {
         this.role = role;
     }
 
-    public static UserInfo from(User user) {
+    public static UserInfo from(User user, int currentGeneration) {
+        Role role = null;
+
+        if (user.getLionInfos() != null) {
+            role = user.getLionInfos().stream()
+                    .filter(lionInfo -> lionInfo.getGeneration() == currentGeneration)
+                    .findFirst()
+                    .map(LionInfo::getRole)
+                    .orElse(null);
+        }
+
         return UserInfo.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .email(user.getEmail())
-                .role(user.getRole().name())
+                .role(role.name())
                 .build();
     }
 }

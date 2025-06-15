@@ -38,7 +38,8 @@ public class Project extends BaseEntity {
     private List<ProjectImage> images = new ArrayList<>();
 
     @Builder
-    public Project(String name, String intro, String description, int generation, ProjectCategory category) {
+    public Project(Long id, String name, String intro, String description, int generation, ProjectCategory category) {
+        this.id = id;
         this.name = name;
         this.intro = intro;
         this.description = description;
