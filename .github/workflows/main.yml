@@ -31,10 +31,10 @@ jobs:
           touch ./jwt.yml
           touch ./mail.yml
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
-          echo "${{ secrets.DB_YML }}" > ./application-common.yml
-          echo "${{ secrets.FILE_YML }}" > ./application-prod.yml
-          echo "${{ secrets.JWT_YML }}" > ./application-prod.yml
-          echo "${{ secrets.MAIL_YML }}" > ./application-prod.yml
+          echo "${{ secrets.DB_YML }}" > ./db.yml
+          echo "${{ secrets.FILE_YML }}" > ./file.yml
+          echo "${{ secrets.JWT_YML }}" > ./jwt.yml
+          echo "${{ secrets.MAIL_YML }}" > ./mail.yml
 
       - name: Build Spring Boot JAR with Gradle
         run: |
