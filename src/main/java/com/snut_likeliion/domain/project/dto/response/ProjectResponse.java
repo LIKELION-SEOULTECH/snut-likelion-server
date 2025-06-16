@@ -2,7 +2,6 @@ package com.snut_likeliion.domain.project.dto.response;
 
 import com.snut_likeliion.domain.project.entity.Project;
 import com.snut_likeliion.domain.project.entity.ProjectCategory;
-import com.snut_likeliion.domain.project.entity.ProjectKeyword;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,19 +16,19 @@ public class ProjectResponse {
     private String name;
     private String description;
     private int generation;
-    private List<String> keywords;
+    private List<String> tags;
     private ProjectCategory category;
     private String representativeImageName;
 
     @Builder
-    public ProjectResponse(Long id, String name, String description, int generation, List<String> keywords, ProjectCategory category, String representativeImageName) {
+    public ProjectResponse(Long id, String name, String description, int generation, List<String> tags, ProjectCategory category, String representativeImageUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.generation = generation;
-        this.keywords = keywords;
+        this.tags = tags;
         this.category = category;
-        this.representativeImageName = representativeImageName;
+        this.representativeImageName = representativeImageUrl;
     }
 
     public static ProjectResponse from(Project project) {
@@ -38,13 +37,9 @@ public class ProjectResponse {
                 .name(project.getName())
                 .description(project.getDescription())
                 .generation(project.getGeneration())
-                .keywords(project.getKeywords().stream().map(ProjectKeyword::getName).toList())
+                .tags(project.getTagList())
                 .category(project.getCategory())
-                .representativeImageName(
-                        project.getImages().isEmpty()
-                                ? null
-                                : project.getImages().get(0).getStoredName()
-                )
+                .representativeImageUrl(project.getRepresentationImageUrl())
                 .build();
     }
 }

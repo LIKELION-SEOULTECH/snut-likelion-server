@@ -29,4 +29,8 @@ public class ProjectParticipation extends BaseEntity {
     public void setLionInfo(LionInfo lionInfo) {
         this.lionInfo = lionInfo;
     }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 }

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ProjectKeyword extends BaseEntity {
+public class ProjectTag extends BaseEntity {
 
     private String name;
 
@@ -18,7 +18,7 @@ public class ProjectKeyword extends BaseEntity {
     @JoinColumn(name = "project_id", referencedColumnName = "id")
     private Project project;
 
-    public ProjectKeyword(String name) {
+    public ProjectTag(String name) {
         this.name = name;
     }
 

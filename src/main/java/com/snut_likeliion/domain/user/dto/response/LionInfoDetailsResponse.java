@@ -1,7 +1,6 @@
 package com.snut_likeliion.domain.user.dto.response;
 
 import com.snut_likeliion.domain.project.entity.Project;
-import com.snut_likeliion.domain.project.entity.ProjectImage;
 import com.snut_likeliion.domain.user.entity.LionInfo;
 import com.snut_likeliion.domain.user.entity.Part;
 import com.snut_likeliion.domain.user.entity.Role;
@@ -24,11 +23,11 @@ public class LionInfoDetailsResponse {
     private List<ParticipatingProject> projects;
 
     @Builder
-    public LionInfoDetailsResponse(int generation, Role role, Part part, String stacks, List<Project> projects) {
+    public LionInfoDetailsResponse(int generation, Role role, Part part, List<String> stacks, List<Project> projects) {
         this.generation = generation;
         this.role = RoleConverter.convert(role);
         this.part = part;
-        this.stacks = (stacks == null || stacks.isEmpty()) ? List.of() : List.of(stacks.split(", "));
+        this.stacks = stacks;
         this.projects = projects.stream().map(ParticipatingProject::from).toList();
     }
 
@@ -37,7 +36,7 @@ public class LionInfoDetailsResponse {
                 .generation(lionInfo.getGeneration())
                 .role(lionInfo.getRole())
                 .part(lionInfo.getPart())
-                .stacks(lionInfo.getStacks())
+                .stacks(lionInfo.getStackList())
                 .projects(projects)
                 .build();
     }
@@ -56,11 +55,10 @@ public class LionInfoDetailsResponse {
         }
 
         public static ParticipatingProject from(Project project) {
-            List<ProjectImage> images = project.getImages();
             return new ParticipatingProject(
                     project.getId(),
                     project.getName(),
-                    (!images.isEmpty()) ? images.get(0).getStoredName() : null
+                    project.getRepresentationImageUrl()
             );
         }
     }

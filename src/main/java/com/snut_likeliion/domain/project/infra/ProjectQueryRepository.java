@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.snut_likeliion.domain.project.entity.QProject.project;
-import static com.snut_likeliion.domain.project.entity.QProjectKeyword.projectKeyword;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,9 +19,7 @@ public class ProjectQueryRepository {
 
     public List<Project> findAllByGenerationAndCategory(Integer generation, ProjectCategory category) {
         return queryFactory
-                .select(project)
-                .from(project)
-                .leftJoin(project.keywords, projectKeyword).fetchJoin()
+                .selectFrom(project)
                 .where(isCorrectGeneration(generation), isCorrectCategory(category))
                 .fetch();
     }

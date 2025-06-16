@@ -174,7 +174,7 @@ public class MemberCommandServiceTest {
                 () -> assertThat(existingLionInfo.getGeneration()).isEqualTo(3),
                 () -> assertThat(existingLionInfo.getPart()).isEqualTo(Part.BACKEND),
                 () -> assertThat(existingLionInfo.getRole()).isEqualTo(Role.ROLE_USER),
-                () -> assertThat(existingLionInfo.getStacks()).isEqualTo("Java,Spring"),
+                () -> assertThat(existingLionInfo.getStacks()).isEqualTo("Java, Spring"),
                 () -> verify(lionInfoRepository, never()).save(any())
         );
     }

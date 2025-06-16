@@ -17,48 +17,47 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Project extends BaseEntity {
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String intro;
 
+    @Column(nullable = false)
     private String description;
 
+    @Column(nullable = false)
     private int generation;
 
+    private String websiteUrl;
+    private String playstoreUrl;
+    private String appstoreUrl;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ProjectCategory category;
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectParticipation> participations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private List<ProjectKeyword> keywords = new ArrayList<>();
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectRetrospection> retrospections = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
-    private List<ProjectImage> images = new ArrayList<>();
+    private String tags;
+
+    private String images;
 
     @Builder
-    public Project(Long id, String name, String intro, String description, int generation, ProjectCategory category) {
+    public Project(Long id, String name, String intro, String description, String websiteUrl, String playstoreUrl, String appstoreUrl, int generation, ProjectCategory category) {
         this.id = id;
         this.name = name;
         this.intro = intro;
         this.description = description;
+        this.websiteUrl = websiteUrl;
+        this.playstoreUrl = playstoreUrl;
+        this.appstoreUrl = appstoreUrl;
         this.generation = generation;
         this.category = category;
-    }
-
-    public void addImage(ProjectImage projectImage) {
-        this.images.add(projectImage);
-        projectImage.setProject(this);
-    }
-
-    public void setKeywords(List<ProjectKeyword> projectKeywords) {
-        this.keywords = projectKeywords;
-        projectKeywords.forEach(projectKeyword -> projectKeyword.setProject(this));
-    }
-
-    public void setParticipants(List<ProjectParticipation> participations) {
-        this.participations = participations;
     }
 
     public void update(String name, String intro, String description, Integer generation, ProjectCategory category) {
@@ -67,5 +66,64 @@ public class Project extends BaseEntity {
         if (StringUtils.hasText(description)) this.description = description;
         if (generation != null) this.generation = generation;
         if (category != null) this.category = category;
+    }
+
+    public String getRepresentationImageUrl() {
+        if (images == null || images.isEmpty()) {
+            return null;
+        }
+        String[] imageUrls = images.split(", ");
+        return imageUrls.length > 0 ? imageUrls[0] : null;
+    }
+
+    public List<String> getTagList() {
+        if (tags == null || tags.isEmpty()) {
+            return List.of();
+        }
+        return List.of(tags.split(", "));
+    }
+
+    public List<String> getImageUrlList() {
+        if (images == null || images.isEmpty()) {
+            return List.of();
+        }
+        return List.of(images.split(", "));
+    }
+
+    public void addParticipation(ProjectParticipation participation) {
+        this.participations.add(participation);
+        participation.setProject(this);
+    }
+
+    public void addRetrospection(ProjectRetrospection retrospection) {
+        this.retrospections.add(retrospection);
+        retrospection.setProject(this);
+    }
+
+    public void setTags(List<String> projectTags) {
+        if (projectTags == null || projectTags.isEmpty()) {
+            this.tags = null;
+            return;
+        }
+        this.tags = String.join(", ", projectTags).toUpperCase();
+    }
+
+    public void setImages(List<String> imageUrls) {
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            this.images = null;
+            return;
+        }
+        this.images = String.join(", ", imageUrls);
+    }
+
+    public void addImage(List<String> imageUrls) {
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            return;
+        }
+        if (this.images == null || this.images.isEmpty()) {
+            this.images = String.join(", ", imageUrls);
+        } else {
+            this.images += ", " + String.join(", ", imageUrls);
+        }
     }
 }
