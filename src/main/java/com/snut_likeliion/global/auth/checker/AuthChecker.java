@@ -1,10 +1,9 @@
 package com.snut_likeliion.global.auth.checker;
 
-import com.snut_likeliion.domain.project.entity.ProjectRetrospection;
-import com.snut_likeliion.domain.project.exception.ProjectErrorCode;
-import com.snut_likeliion.domain.project.infra.ProjectRetrospectionRepository;
+import com.snut_likeliion.domain.project.infra.ProjectParticipationRepository;
+import com.snut_likeliion.domain.user.entity.LionInfo;
+import com.snut_likeliion.domain.user.repository.LionInfoRepository;
 import com.snut_likeliion.global.auth.model.UserInfo;
-import com.snut_likeliion.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,24 +13,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthChecker {
 
-    private final ProjectRetrospectionRepository projectRetrospectionRepository;
-
-    public boolean isMyRetrospection(UserInfo user, Long retrospectionId) {
-        ProjectRetrospection retrospection = projectRetrospectionRepository.findById(retrospectionId)
-                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_RETROSPECTION));
-
-        return this.isWriter(user, retrospection) || this.hasManagerAuthority(user);
-    }
+    private final LionInfoRepository lionInfoRepository;
+    private final ProjectParticipationRepository projectParticipationRepository;
 
     private boolean hasManagerAuthority(UserInfo user) {
         return List.of("ROLE_ADMIN", "ROLE_MANAGER").contains(user.getRole());
     }
 
-    private boolean isWriter(UserInfo user, ProjectRetrospection retrospection) {
-        return retrospection.getWriter().getId().equals(user.getId());
-    }
-
     public boolean isMe(UserInfo userInfo, Long memberId) {
         return userInfo.getId().equals(memberId) || this.hasManagerAuthority(userInfo);
+    }
+
+    public boolean isMyProject(UserInfo userInfo, Long projectId) {
+        List<LionInfo> lionInfos = lionInfoRepository.findByUser_Id(userInfo.getId());
+        List<Long> lionInfoIds = lionInfos.stream().map(LionInfo::getId).toList();
+        boolean isMyProject = projectParticipationRepository.existsByProject_IdAndLionInfo_Ids(projectId, lionInfoIds);
+
+        return isMyProject || this.hasManagerAuthority(userInfo);
     }
 }

@@ -7,6 +7,7 @@ import com.snut_likeliion.domain.project.entity.ProjectParticipation;
 import com.snut_likeliion.domain.user.dto.response.LionInfoDetailsResponse;
 import com.snut_likeliion.domain.user.dto.response.MemberDetailResponse;
 import com.snut_likeliion.domain.user.dto.response.MemberResponse;
+import com.snut_likeliion.domain.user.dto.response.MemberSearchResponse;
 import com.snut_likeliion.domain.user.entity.*;
 import com.snut_likeliion.domain.user.exception.UserErrorCode;
 import com.snut_likeliion.domain.user.repository.LionInfoRepository;
@@ -243,7 +244,7 @@ public class MemberQueryServiceTest {
         assertAll(
                 () -> assertThat(infoDetails.getGeneration()).isEqualTo(generation),
                 () -> assertThat(infoDetails.getRole()).isEqualTo("아기사자"),
-                () -> assertThat(infoDetails.getPart()).isEqualTo(Part.BACKEND),
+                () -> assertThat(infoDetails.getPart()).isEqualTo(Part.BACKEND.name()),
                 () -> assertThat(infoDetails.getStacks()).hasSize(2),
                 () -> assertThat(infoDetails.getStacks()).containsExactly("Java", "Spring"),
                 () -> assertThat(infoDetails.getProjects()).hasSize(2),
@@ -266,5 +267,47 @@ public class MemberQueryServiceTest {
         assertThatThrownBy(() -> memberQueryService.getMemberLionInfoByIdAndGeneration(memberId, generation))
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(UserErrorCode.NOT_FOUND_LION_INFO.getMessage());
+    }
+
+    @Test
+    void searchMembers_delegatesToRepository_returnsResults() {
+        // Given
+        String keyword = "John";
+        MemberSearchResponse msr1 = MemberSearchResponse.builder()
+                .id(1L)
+                .name("John")
+                .part(Part.BACKEND)
+                .generation(13)
+                .profileImageUrl("url1")
+                .build();
+
+        MemberSearchResponse msr2 = MemberSearchResponse.builder()
+                .id(2L)
+                .name("Johnny")
+                .part(Part.FRONTEND)
+                .generation(12)
+                .profileImageUrl("url2")
+                .build();
+
+        when(userRepository.searchUserByKeyword(keyword)).thenReturn(List.of(msr1, msr2));
+
+        // When
+        List<MemberSearchResponse> result = memberQueryService.searchMembers(keyword);
+
+        // Then
+        assertThat(result).containsExactly(msr1, msr2);
+    }
+
+    @Test
+    void searchMembers_whenNoMatches_returnsEmptyList() {
+        // Given
+        String keyword = "xyz";
+        when(userRepository.searchUserByKeyword(keyword)).thenReturn(List.of());
+
+        // When
+        List<MemberSearchResponse> result = memberQueryService.searchMembers(keyword);
+
+        // Then
+        assertThat(result).isEmpty();
     }
 }

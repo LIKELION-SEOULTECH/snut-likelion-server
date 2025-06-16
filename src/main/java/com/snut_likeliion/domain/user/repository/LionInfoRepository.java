@@ -16,4 +16,6 @@ public interface LionInfoRepository extends JpaRepository<LionInfo, Long> {
     @Query("select li.generation from LionInfo li " +
             "where li.user.id = :memberId")
     List<Integer> findGenerationsByUser_Id(Long memberId);
+
+    List<LionInfo> findByUser_Id(Long userId);
 }

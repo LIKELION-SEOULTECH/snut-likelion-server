@@ -2,10 +2,7 @@ package com.snut_likeliion.domain.user.service;
 
 import com.snut_likeliion.domain.project.entity.Project;
 import com.snut_likeliion.domain.project.entity.ProjectParticipation;
-import com.snut_likeliion.domain.user.dto.response.LionInfoDetailsResponse;
-import com.snut_likeliion.domain.user.dto.response.MemberDetailResponse;
-import com.snut_likeliion.domain.user.dto.response.MemberResponse;
-import com.snut_likeliion.domain.user.dto.response.PortfolioLinkDto;
+import com.snut_likeliion.domain.user.dto.response.*;
 import com.snut_likeliion.domain.user.entity.LionInfo;
 import com.snut_likeliion.domain.user.entity.Role;
 import com.snut_likeliion.domain.user.entity.User;
@@ -21,13 +18,13 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberQueryService {
 
     private final UserRepository userRepository;
     private final LionInfoRepository lionInfoRepository;
 
+    @Transactional(readOnly = true)
     public List<MemberResponse> getMembersByQuery(int generation, boolean isManager) {
         // 어차피 데이터가 많지 않아서 굳이 role에 대한 인덱스 추가 조회보다는 전체 조회 후 애플리케이션 단에서 필터링 해도 성능에 큰 영향은 없음
         List<LionInfo> lionInfos = lionInfoRepository.findAllByGeneration(generation);
@@ -36,8 +33,7 @@ public class MemberQueryService {
                 .map(lionInfo -> {
                     User user = lionInfo.getUser();
                     List<PortfolioLinkDto> portfolioLinks = user.getPortfolioLinks().stream()
-                            .map(l -> new PortfolioLinkDto(l.getName(), l.getUrl()))
-                            .toList();
+                            .map(PortfolioLinkDto::from).toList();
                     return MemberResponse.of(user, lionInfo, portfolioLinks);
                 })
                 .sorted(Comparator.comparing(r -> !r.getRole().equals("대표")))
@@ -52,6 +48,7 @@ public class MemberQueryService {
         return role.equals(Role.ROLE_USER);
     }
 
+    @Transactional(readOnly = true)
     public MemberDetailResponse getMemberDetailsById(Long memberId) {
         User user = userRepository.findUserDetailsByUserId(memberId)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
@@ -59,6 +56,7 @@ public class MemberQueryService {
         return MemberDetailResponse.of(user, generations);
     }
 
+    @Transactional(readOnly = true)
     public LionInfoDetailsResponse getMemberLionInfoByIdAndGeneration(Long memberId, int generation) {
         LionInfo lionInfo = lionInfoRepository.findByUser_IdAndGeneration(memberId, generation)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND_LION_INFO));
@@ -69,4 +67,8 @@ public class MemberQueryService {
         return LionInfoDetailsResponse.of(lionInfo, projects);
     }
 
+    @Transactional(readOnly = true)
+    public List<MemberSearchResponse> searchMembers(String keyword) {
+        return userRepository.searchUserByKeyword(keyword);
+    }
 }

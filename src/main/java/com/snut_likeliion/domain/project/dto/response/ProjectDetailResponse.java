@@ -2,8 +2,6 @@ package com.snut_likeliion.domain.project.dto.response;
 
 import com.snut_likeliion.domain.project.entity.Project;
 import com.snut_likeliion.domain.project.entity.ProjectCategory;
-import com.snut_likeliion.domain.project.entity.ProjectImage;
-import com.snut_likeliion.domain.project.entity.ProjectKeyword;
 import com.snut_likeliion.domain.user.entity.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,22 +19,28 @@ public class ProjectDetailResponse {
     private String intro;
     private String description;
     private int generation;
-    private List<String> keywords;
+    private String websiteUrl;
+    private String playstoreUrl;
+    private String appstoreUrl;
+    private List<String> tags;
     private List<Participant> members;
     private ProjectCategory category;
-    private List<Image> images;
+    private List<String> imageUrls;
 
     @Builder
-    public ProjectDetailResponse(Long id, String name, String intro, String description, int generation, List<String> keywords, List<Participant> members, ProjectCategory category, List<Image> images) {
+    public ProjectDetailResponse(Long id, String name, String intro, String description, int generation, String websiteUrl, String playstoreUrl, String appstoreUrl, List<String> tags, List<Participant> members, ProjectCategory category, List<String> imageUrls) {
         this.id = id;
         this.name = name;
         this.intro = intro;
         this.description = description;
         this.generation = generation;
-        this.keywords = keywords;
+        this.websiteUrl = websiteUrl;
+        this.playstoreUrl = playstoreUrl;
+        this.appstoreUrl = appstoreUrl;
+        this.tags = tags;
         this.members = members;
         this.category = category;
-        this.images = images;
+        this.imageUrls = imageUrls;
     }
 
     public static ProjectDetailResponse from(Project project) {
@@ -46,8 +50,11 @@ public class ProjectDetailResponse {
                 .intro(project.getIntro())
                 .description(project.getDescription())
                 .generation(project.getGeneration())
+                .websiteUrl(project.getWebsiteUrl())
+                .playstoreUrl(project.getPlaystoreUrl())
+                .appstoreUrl(project.getAppstoreUrl())
                 .category(project.getCategory())
-                .keywords(project.getKeywords().stream().map(ProjectKeyword::getName).toList()) // TODO: N+1
+                .tags(project.getTagList())
                 .members(
                         project.getParticipations().stream()
                                 .map(projectParticipation -> {
@@ -56,7 +63,7 @@ public class ProjectDetailResponse {
                                 })
                                 .toList()
                 ) // TODO: N+1
-                .images(project.getImages().stream().map(Image::from).toList()) // TODO: N+1
+                .imageUrls(project.getImageUrlList())
                 .build();
     }
 
@@ -79,22 +86,4 @@ public class ProjectDetailResponse {
         }
     }
 
-    @Getter
-    public static class Image {
-        private String originalName;
-        private String storedName;
-
-        @Builder
-        public Image(String originalName, String storedName) {
-            this.originalName = originalName;
-            this.storedName = storedName;
-        }
-
-        public static Image from(ProjectImage projectImage) {
-            return Image.builder()
-                    .originalName(projectImage.getOriginalName())
-                    .storedName(projectImage.getStoredName())
-                    .build();
-        }
-    }
 }

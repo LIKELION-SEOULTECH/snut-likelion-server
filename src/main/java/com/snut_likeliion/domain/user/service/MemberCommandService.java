@@ -15,8 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -40,7 +38,7 @@ public class MemberCommandService {
             this.removePrevProfileImage(user);
             String storedName = this.storeProfileImage(req.getProfileImage());
             // 트랜잭션이 롤백되면 방금 저장한 파일을 삭제하도록 등록
-            this.setTransactionSynchronizationForImage(storedName);
+            fileProvider.setTransactionSynchronizationForImage(storedName);
             user.changeProfileImage(fileProvider.buildImageUrl(storedName)); // TODO: 프로필 이미지 URL 빌드 로직 수정
         }
 
@@ -49,17 +47,6 @@ public class MemberCommandService {
         }
 
         user.updateProfile(req.getIntro(), req.getDescription(), req.getMajor());
-    }
-
-    private void setTransactionSynchronizationForImage(String storedName) {
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCompletion(int status) {
-                if (status == TransactionSynchronization.STATUS_ROLLED_BACK) {
-                    fileProvider.deleteFile(storedName);
-                }
-            }
-        });
     }
 
     private void connectPortfolioLinks(List<UpdateProfileRequest.PortfolioLinkDto> portfolioLinkDtos, User user) {
@@ -83,8 +70,8 @@ public class MemberCommandService {
 
     @Transactional
     @PreAuthorize("@authChecker.isMe(#loginUser, #memberId)")
-    public void upsertLionInfo(UserInfo loginUser, Long memberId, UpdateLionInfoRequest req) {
-        lionInfoRepository.findByUser_IdAndGeneration(memberId, req.getGeneration())
+    public void upsertLionInfo(UserInfo loginUser, Long memberId, int generation, UpdateLionInfoRequest req) {
+        lionInfoRepository.findByUser_IdAndGeneration(memberId, generation)
                 .ifPresentOrElse(
                         lionInfo -> {
                             lionInfo.update(
@@ -95,7 +82,7 @@ public class MemberCommandService {
                         },
                         () -> {
                             LionInfo lionInfo = LionInfo.of(
-                                    req.getGeneration(),
+                                    generation,
                                     Part.valueOf(String.valueOf(req.getPart())),
                                     Role.valueOf(String.valueOf(req.getRole()))
                             );

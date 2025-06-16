@@ -20,14 +20,14 @@ public enum PermitAllUrls {
     FIND_PASSWORD("/api/v1/auth/password/find", POST),
     CHANGE_PASSWORD("/api/v1/auth/password/change", PATCH),
     REFRESH("/api/v1/auth/refresh", GET),
+    GET_IMAGE("/api/v1/images*", GET),
     GET_ALL_PROJECTS("/api/v1/projects", GET),
     GET_PROJECT("/api/v1/projects/{projectId}", GET),
-    GET_PROJECT_RETROSPECTIONS("/api/v1/projects/{projectId}/retrospection", GET),
-    GET_PROJECT_IMAGE("/api/v1/projects/{projectId}/images*", GET),
-    GET_IMAGE("/api/v1/images*", GET),
+    GET_PROJECT_RETROSPECTIONS("/api/v1/projects/{projectId}/retrospections", GET),
     GET_MEMBERS("/api/v1/members", GET),
+    SEARCH_MEMBERS("/api/v1/members/search*", GET),
     GET_MEMBER_DETAILS("/api/v1/members/{memberId}", GET),
-    ;
+    GET_MEMBER_LION_INFO("/api/v1/members/{memberId}/lion-info", GET);
 
     private final String url;
     private final HttpMethod method;

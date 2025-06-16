@@ -4,6 +4,8 @@ import com.snut_likeliion.domain.project.entity.ProjectRetrospection;
 import com.snut_likeliion.domain.user.entity.LionInfo;
 import com.snut_likeliion.domain.user.entity.Part;
 import com.snut_likeliion.domain.user.entity.User;
+import com.snut_likeliion.domain.user.exception.UserErrorCode;
+import com.snut_likeliion.global.error.exception.NotFoundException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +30,7 @@ public class RetrospectionResponse {
         return RetrospectionResponse.builder()
                 .id(projectRetrospection.getId())
                 .content(projectRetrospection.getContent())
-                .writer(Writer.from(projectRetrospection.getWriter()))
+                .writer(Writer.from(projectRetrospection.getWriter(), projectRetrospection.getProject().getGeneration()))
                 .build();
     }
 
@@ -36,17 +38,21 @@ public class RetrospectionResponse {
     public static class Writer {
         private Long id;
         private String name;
-        private Part part;
+        private String part;
 
         @Builder
         public Writer(Long id, String name, Part part) {
             this.id = id;
             this.name = name;
-            this.part = part;
+            this.part = part.name();
         }
 
-        public static Writer from(User writer) {
-            LionInfo currentLionInfo = writer.getLionInfos().get(0);
+        public static Writer from(User writer, int generation) {
+            LionInfo currentLionInfo = writer.getLionInfos().stream()
+                    .filter(lionInfo -> lionInfo.getGeneration() == generation)
+                    .findFirst()
+                    .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND_LION_INFO));
+
             return Writer.builder()
                     .id(writer.getId())
                     .name(writer.getUsername())

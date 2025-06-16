@@ -58,8 +58,11 @@ public class LionInfo extends BaseEntity {
                 .build();
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public List<String> getStackList() {
+        if (stacks == null || stacks.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return List.of(stacks.split(", "));
     }
 
     public void update(List<String> stacks, Part part, Role role) {
@@ -75,6 +78,11 @@ public class LionInfo extends BaseEntity {
             this.role = role;
         }
     }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 
     public void addProjectParticipation(ProjectParticipation participation) {
         this.participations.add(participation);

@@ -1,7 +1,6 @@
 package com.snut_likeliion.domain.user.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -11,15 +10,12 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateLionInfoRequest {
 
-    @Min(value = 1, message = "기수가 올바르지 않습니다.")
-    private int generation;
     private PartMapping part;
     private RoleMapping role;
     private List<String> stacks = new ArrayList<>();
 
     @Builder
-    public UpdateLionInfoRequest(int generation, PartMapping part, RoleMapping role, List<String> stacks) {
-        this.generation = generation;
+    public UpdateLionInfoRequest(PartMapping part, RoleMapping role, List<String> stacks) {
         this.part = part;
         this.role = role;
         this.stacks = stacks == null ? new ArrayList<>() : stacks;

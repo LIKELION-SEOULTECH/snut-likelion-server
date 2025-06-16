@@ -5,6 +5,7 @@ import com.snut_likeliion.domain.user.dto.request.UpdateProfileRequest;
 import com.snut_likeliion.domain.user.dto.response.LionInfoDetailsResponse;
 import com.snut_likeliion.domain.user.dto.response.MemberDetailResponse;
 import com.snut_likeliion.domain.user.dto.response.MemberResponse;
+import com.snut_likeliion.domain.user.dto.response.MemberSearchResponse;
 import com.snut_likeliion.domain.user.service.MemberCommandService;
 import com.snut_likeliion.domain.user.service.MemberQueryService;
 import com.snut_likeliion.global.auth.model.SnutLikeLionUser;
@@ -32,6 +33,16 @@ public class MemberController {
         return ApiResponse.success(
                 memberQueryService.getMembersByQuery(generation, isManager),
                 "멤버 리스트 조회 성공"
+        );
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<List<MemberSearchResponse>> searchMembers(
+            @RequestParam(name = "keyword") String keyword
+    ) {
+        return ApiResponse.success(
+                memberQueryService.searchMembers(keyword),
+                "멤버 검색 성공"
         );
     }
 
@@ -68,9 +79,10 @@ public class MemberController {
     public void updateLionInfo(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("memberId") Long memberId,
+            @RequestParam(value = "generation") int generation,
             @RequestBody UpdateLionInfoRequest req
     ) {
-        memberCommandService.upsertLionInfo(loginUser.getUserInfo(), memberId, req);
+        memberCommandService.upsertLionInfo(loginUser.getUserInfo(), memberId, generation, req);
     }
 
     @DeleteMapping("/{memberId}")
