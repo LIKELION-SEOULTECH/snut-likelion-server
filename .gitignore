@@ -37,6 +37,6 @@ out/
 .vscode/
 
 application*.yml
-*.yml
+**/resources/*.yml
 
 /src/main/resources/images/*
