@@ -21,6 +21,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: make application.yml
+        run: |
+          mkdir -p ./src/main/resources
+          cd ./src/main/resources
+          touch ./application.yml
+          touch ./db.yml
+          touch ./file.yml
+          touch ./jwt.yml
+          touch ./mail.yml
+          echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+          echo "${{ secrets.DB_YML }}" > ./application-common.yml
+          echo "${{ secrets.FILE_YML }}" > ./application-prod.yml
+          echo "${{ secrets.JWT_YML }}" > ./application-prod.yml
+          echo "${{ secrets.MAIL_YML }}" > ./application-prod.yml
 
       - name: Build Spring Boot JAR with Gradle
         run: |
