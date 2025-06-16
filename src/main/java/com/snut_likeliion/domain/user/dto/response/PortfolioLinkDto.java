@@ -10,17 +10,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PortfolioLinkDto {
 
+    private Long id;
     private PortFolioLinkType name;
     private String url;
 
     @Builder
-    public PortfolioLinkDto(PortFolioLinkType name, String url) {
+    public PortfolioLinkDto(Long id, PortFolioLinkType name, String url) {
+        this.id = id;
         this.name = name;
         this.url = url;
     }
 
     public static PortfolioLinkDto from(PortfolioLink portfolioLink) {
         return PortfolioLinkDto.builder()
+                .id(portfolioLink.getId())
                 .name(portfolioLink.getName())
                 .url(portfolioLink.getUrl())
                 .build();

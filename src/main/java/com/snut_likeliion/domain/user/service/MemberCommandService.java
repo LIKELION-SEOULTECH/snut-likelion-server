@@ -70,8 +70,8 @@ public class MemberCommandService {
 
     @Transactional
     @PreAuthorize("@authChecker.isMe(#loginUser, #memberId)")
-    public void upsertLionInfo(UserInfo loginUser, Long memberId, UpdateLionInfoRequest req) {
-        lionInfoRepository.findByUser_IdAndGeneration(memberId, req.getGeneration())
+    public void upsertLionInfo(UserInfo loginUser, Long memberId, int generation, UpdateLionInfoRequest req) {
+        lionInfoRepository.findByUser_IdAndGeneration(memberId, generation)
                 .ifPresentOrElse(
                         lionInfo -> {
                             lionInfo.update(
@@ -82,7 +82,7 @@ public class MemberCommandService {
                         },
                         () -> {
                             LionInfo lionInfo = LionInfo.of(
-                                    req.getGeneration(),
+                                    generation,
                                     Part.valueOf(String.valueOf(req.getPart())),
                                     Role.valueOf(String.valueOf(req.getRole()))
                             );

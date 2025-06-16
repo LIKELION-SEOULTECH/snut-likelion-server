@@ -39,7 +39,7 @@ public class ProjectCommandService {
     public void create(CreateProjectRequest req) {
         Project project = req.toEntityWithValue();
         project.setTags(req.getTags());
-        this.storeProjectImagesIfPresent(req.getImages(), project);
+        this.storeProjectImages(req.getImages(), project);
         this.connectParticipants(req.getMemberIds(), project);
         this.connectRetrospections(req.getRetrospections(), project);
         projectRepository.save(project);
@@ -86,7 +86,7 @@ public class ProjectCommandService {
         // 이미 존재하는 회고는 업데이트하고, 새로운 회고는 추가
         this.upsertRetrospections(req.getRetrospections(), project);
 
-        this.storeProjectImagesIfPresent(req.getNewImages(), project);
+        this.storeProjectImages(req.getNewImages(), project);
     }
 
     private void upsertRetrospections(List<RetrospectionDto> retrospections, Project project) {
@@ -115,12 +115,12 @@ public class ProjectCommandService {
         return projectRetrospection;
     }
 
-    private void storeProjectImagesIfPresent(List<MultipartFile> files, Project project) {
-        List<String> imageUrls = new ArrayList<>();
-
+    private void storeProjectImages(List<MultipartFile> files, Project project) {
         if (files == null || files.isEmpty()) {
             return; // 이미지가 없으면 그냥 리턴
         }
+
+        List<String> imageUrls = new ArrayList<>();
 
         files.forEach(file -> {
             String contentType = file.getContentType();

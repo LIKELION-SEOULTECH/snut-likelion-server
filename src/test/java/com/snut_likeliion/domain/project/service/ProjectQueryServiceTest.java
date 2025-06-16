@@ -69,7 +69,7 @@ class ProjectQueryServiceTest {
 
         // Then
         assertThat(responses).hasSize(2)
-                .extracting(ProjectResponse::getId, ProjectResponse::getName, ProjectResponse::getGeneration, ProjectResponse::getCategory, ProjectResponse::getRepresentativeImageName)
+                .extracting(ProjectResponse::getId, ProjectResponse::getName, ProjectResponse::getGeneration, ProjectResponse::getCategory, ProjectResponse::getThumbnailUrl)
                 .containsExactly(
                         tuple(100L, "프로젝트1", generation, category, "https://cdn.cn/image1.jpg"),
                         tuple(200L, "프로젝트2", generation, category, null)

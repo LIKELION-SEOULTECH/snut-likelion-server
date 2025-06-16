@@ -244,7 +244,7 @@ public class MemberQueryServiceTest {
         assertAll(
                 () -> assertThat(infoDetails.getGeneration()).isEqualTo(generation),
                 () -> assertThat(infoDetails.getRole()).isEqualTo("아기사자"),
-                () -> assertThat(infoDetails.getPart()).isEqualTo(Part.BACKEND),
+                () -> assertThat(infoDetails.getPart()).isEqualTo(Part.BACKEND.name()),
                 () -> assertThat(infoDetails.getStacks()).hasSize(2),
                 () -> assertThat(infoDetails.getStacks()).containsExactly("Java", "Spring"),
                 () -> assertThat(infoDetails.getProjects()).hasSize(2),

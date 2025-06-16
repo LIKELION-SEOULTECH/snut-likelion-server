@@ -68,7 +68,7 @@ public class Project extends BaseEntity {
         if (category != null) this.category = category;
     }
 
-    public String getRepresentationImageUrl() {
+    public String getThumbnailUrl() {
         if (images == null || images.isEmpty()) {
             return null;
         }

@@ -33,8 +33,7 @@ public class MemberQueryService {
                 .map(lionInfo -> {
                     User user = lionInfo.getUser();
                     List<PortfolioLinkDto> portfolioLinks = user.getPortfolioLinks().stream()
-                            .map(l -> new PortfolioLinkDto(l.getName(), l.getUrl()))
-                            .toList();
+                            .map(PortfolioLinkDto::from).toList();
                     return MemberResponse.of(user, lionInfo, portfolioLinks);
                 })
                 .sorted(Comparator.comparing(r -> !r.getRole().equals("대표")))

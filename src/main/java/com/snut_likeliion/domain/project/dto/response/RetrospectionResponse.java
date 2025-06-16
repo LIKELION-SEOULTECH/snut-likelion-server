@@ -38,13 +38,13 @@ public class RetrospectionResponse {
     public static class Writer {
         private Long id;
         private String name;
-        private Part part;
+        private String part;
 
         @Builder
         public Writer(Long id, String name, Part part) {
             this.id = id;
             this.name = name;
-            this.part = part;
+            this.part = part.name();
         }
 
         public static Writer from(User writer, int generation) {

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/projects/{projectId}/retrospection")
+@RequestMapping("/api/v1/projects/{projectId}/retrospections")
 @RequiredArgsConstructor
 public class ProjectRetrospectionController {
 
@@ -32,7 +32,6 @@ public class ProjectRetrospectionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProjectRetrospection(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
-            @PathVariable("projectId") Long projectId,
             @PathVariable("retrospectionId") Long retrospectionId
     ) {
         projectRetrospectionService.remove(loginUser.getUserInfo(), retrospectionId);

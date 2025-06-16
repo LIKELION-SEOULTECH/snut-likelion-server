@@ -150,8 +150,8 @@ public class MemberCommandServiceTest {
     void upsertLionInfo_existing_shouldUpdateLionInfo() {
         // Given
         Long memberId = 1L;
+        int generation = 13;
         UpdateLionInfoRequest req = UpdateLionInfoRequest.builder()
-                .generation(3)
                 .stacks(List.of("Java", "Spring"))
                 .part(UpdateLionInfoRequest.PartMapping.BACKEND)
                 .role(UpdateLionInfoRequest.RoleMapping.ROLE_USER)
@@ -163,11 +163,11 @@ public class MemberCommandServiceTest {
                 .role(Role.ROLE_ADMIN)
                 .build();
 
-        when(lionInfoRepository.findByUser_IdAndGeneration(memberId, 3))
+        when(lionInfoRepository.findByUser_IdAndGeneration(memberId, generation))
                 .thenReturn(Optional.of(existingLionInfo));
 
         // When
-        memberCommandService.upsertLionInfo(loginUser, memberId, req);
+        memberCommandService.upsertLionInfo(loginUser, memberId, generation, req);
 
         // Then
         assertAll(
@@ -185,7 +185,6 @@ public class MemberCommandServiceTest {
         Long memberId = 1L;
         int generation = 13;
         UpdateLionInfoRequest req = UpdateLionInfoRequest.builder()
-                .generation(generation)
                 .stacks(List.of("Java", "Spring"))
                 .part(UpdateLionInfoRequest.PartMapping.BACKEND)
                 .role(UpdateLionInfoRequest.RoleMapping.ROLE_MANAGER)
@@ -199,7 +198,7 @@ public class MemberCommandServiceTest {
                 .thenReturn(Optional.of(user));
 
         // When
-        memberCommandService.upsertLionInfo(loginUser, memberId, req);
+        memberCommandService.upsertLionInfo(loginUser, memberId, generation, req);
 
         // Then
         LionInfo saved = user.getLionInfos().get(0);

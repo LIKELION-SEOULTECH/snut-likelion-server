@@ -18,7 +18,7 @@ public class LionInfoDetailsResponse {
 
     private int generation;
     private String role;
-    private Part part;
+    private String part;
     private List<String> stacks;
     private List<ParticipatingProject> projects;
 
@@ -26,7 +26,7 @@ public class LionInfoDetailsResponse {
     public LionInfoDetailsResponse(int generation, Role role, Part part, List<String> stacks, List<Project> projects) {
         this.generation = generation;
         this.role = RoleConverter.convert(role);
-        this.part = part;
+        this.part = part.name();
         this.stacks = stacks;
         this.projects = projects.stream().map(ParticipatingProject::from).toList();
     }
@@ -58,7 +58,7 @@ public class LionInfoDetailsResponse {
             return new ParticipatingProject(
                     project.getId(),
                     project.getName(),
-                    project.getRepresentationImageUrl()
+                    project.getThumbnailUrl()
             );
         }
     }

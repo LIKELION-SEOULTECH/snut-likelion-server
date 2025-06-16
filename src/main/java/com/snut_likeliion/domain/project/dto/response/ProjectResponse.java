@@ -18,17 +18,17 @@ public class ProjectResponse {
     private int generation;
     private List<String> tags;
     private ProjectCategory category;
-    private String representativeImageName;
+    private String thumbnailUrl;
 
     @Builder
-    public ProjectResponse(Long id, String name, String description, int generation, List<String> tags, ProjectCategory category, String representativeImageUrl) {
+    public ProjectResponse(Long id, String name, String description, int generation, List<String> tags, ProjectCategory category, String thumbnailUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.generation = generation;
         this.tags = tags;
         this.category = category;
-        this.representativeImageName = representativeImageUrl;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public static ProjectResponse from(Project project) {
@@ -39,7 +39,7 @@ public class ProjectResponse {
                 .generation(project.getGeneration())
                 .tags(project.getTagList())
                 .category(project.getCategory())
-                .representativeImageUrl(project.getRepresentationImageUrl())
+                .thumbnailUrl(project.getThumbnailUrl())
                 .build();
     }
 }

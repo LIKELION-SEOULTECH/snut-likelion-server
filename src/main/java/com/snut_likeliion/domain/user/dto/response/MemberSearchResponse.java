@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class MemberSearchResponse {
     private Long id;
     private String name;
-    private Part part;
+    private String part;
     private int generation;
     private String profileImageUrl;
 
@@ -19,7 +19,7 @@ public class MemberSearchResponse {
     public MemberSearchResponse(Long id, String name, Part part, int generation, String profileImageUrl) {
         this.id = id;
         this.name = name;
-        this.part = part;
+        this.part = part.name();
         this.generation = generation;
         this.profileImageUrl = profileImageUrl;
     }

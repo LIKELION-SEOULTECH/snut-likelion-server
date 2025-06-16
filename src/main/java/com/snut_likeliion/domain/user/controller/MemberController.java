@@ -79,9 +79,10 @@ public class MemberController {
     public void updateLionInfo(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("memberId") Long memberId,
+            @RequestParam(value = "generation") int generation,
             @RequestBody UpdateLionInfoRequest req
     ) {
-        memberCommandService.upsertLionInfo(loginUser.getUserInfo(), memberId, req);
+        memberCommandService.upsertLionInfo(loginUser.getUserInfo(), memberId, generation, req);
     }
 
     @DeleteMapping("/{memberId}")
