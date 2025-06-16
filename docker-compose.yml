@@ -15,9 +15,7 @@ services:
       - snut_likelion_db_data:/var/lib/mysql
 
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: maruhan/snut-likelion:latest
     container_name: snut-likelion-app
     ports:
       - "8080:8080"
