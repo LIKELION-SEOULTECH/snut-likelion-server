@@ -12,7 +12,21 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - snut_likelion_db_data:/var/lib/mysql
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: snut-likelion-app
+    ports:
+      - "8080:8080"
+    environment:
+      TZ: Asia/Seoul
+    volumes:
+      - ./build/libs/snut-likelion-app.jar:/app/snut-likelion-app.jar
+    depends_on:
+      - db
 
 volumes:
-  mysql_data:
+  snut_likelion_db_data:
