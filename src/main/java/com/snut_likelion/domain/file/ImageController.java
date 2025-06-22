@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.file;
 
-import com.snut_likelion.domain.project.infra.FileProvider;
+import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.GetMapping;
