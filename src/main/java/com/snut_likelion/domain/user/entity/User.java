@@ -1,6 +1,7 @@
 package com.snut_likelion.domain.user.entity;
 
 
+import com.snut_likelion.domain.recruitment.entity.Application;
 import com.snut_likelion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -23,6 +24,7 @@ public class User extends BaseEntity {
 
     private String username; // 실제 이름
 
+    @Column(nullable = false)
     private String password;
 
     @Column(unique = true)
@@ -37,7 +39,7 @@ public class User extends BaseEntity {
     @Column(length = 200)
     private String saying; // 명언
 
-    @Column(length = 100)
+    @Column(length = 100, nullable = false)
     private String major; // 전공
 
     @Lob
@@ -48,6 +50,9 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PortfolioLink> portfolioLinks = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Application application;
 
     @Builder
     public User(Long id, String email, String username, String password, String phoneNumber, String intro, String description, String saying, String major, String profileImageUrl) {
@@ -91,11 +96,11 @@ public class User extends BaseEntity {
         lionInfo.setUser(this);
     }
 
-    public void generateCurrentLionInfo(int currentGeneration, Part part) {
+    public void generateCurrentLionInfo(int currentGeneration, Part part, Role role) {
         LionInfo lionInfo = LionInfo.builder()
                 .generation(currentGeneration)
-                .part(part) // 초기 파트는 null
-                .role(Role.ROLE_USER) // 초기 역할은 null
+                .part(part)
+                .role(role)
                 .build();
 
         this.addLionInfo(lionInfo);
