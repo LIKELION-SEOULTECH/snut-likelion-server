@@ -12,6 +12,8 @@ import java.util.List;
 @Getter
 public class SnutLikeLionUser implements UserDetails {
 
+    private static final String ROLE_GUEST = "ROLE_GUEST";
+
     private UserInfo userInfo;
 
     private SnutLikeLionUser(UserInfo userInfo) {
@@ -25,7 +27,8 @@ public class SnutLikeLionUser implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(userInfo.getRole());
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(
+                userInfo.getRole() == null ? ROLE_GUEST : userInfo.getRole());
         authorities.add(simpleGrantedAuthority);
         return authorities;
     }

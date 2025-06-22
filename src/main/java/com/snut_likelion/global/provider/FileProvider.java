@@ -1,4 +1,4 @@
-package com.snut_likelion.domain.project.infra;
+package com.snut_likelion.global.provider;
 
 import org.springframework.core.io.Resource;
 import org.springframework.transaction.support.TransactionSynchronization;

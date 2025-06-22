@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.user.service;
 
-import com.snut_likelion.domain.project.infra.FileProvider;
+import com.snut_likelion.global.provider.FileProvider;
 import com.snut_likelion.domain.user.dto.request.UpdateLionInfoRequest;
 import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
 import com.snut_likelion.domain.user.entity.LionInfo;

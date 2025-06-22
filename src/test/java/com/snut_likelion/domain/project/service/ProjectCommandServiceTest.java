@@ -8,7 +8,7 @@ import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.entity.ProjectRetrospection;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;
-import com.snut_likelion.domain.project.infra.FileProvider;
+import com.snut_likelion.global.provider.FileProvider;
 import com.snut_likelion.domain.project.infra.ProjectRepository;
 import com.snut_likelion.domain.project.infra.ProjectRetrospectionRepository;
 import com.snut_likelion.domain.user.entity.LionInfo;

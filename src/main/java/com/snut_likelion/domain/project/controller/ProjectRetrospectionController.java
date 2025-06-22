@@ -32,8 +32,9 @@ public class ProjectRetrospectionController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProjectRetrospection(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
+            @PathVariable("projectId") Long projectId,
             @PathVariable("retrospectionId") Long retrospectionId
     ) {
-        projectRetrospectionService.remove(loginUser.getUserInfo(), retrospectionId);
+        projectRetrospectionService.remove(loginUser.getUserInfo(), projectId, retrospectionId);
     }
 }
