@@ -5,15 +5,14 @@ import com.snut_likelion.domain.auth.dto.FindPasswordRequest;
 import com.snut_likelion.domain.auth.dto.RegisterReq;
 import com.snut_likelion.domain.auth.entity.CertificationToken;
 import com.snut_likelion.domain.auth.exception.AuthErrorCode;
-import com.snut_likelion.domain.auth.provider.MailSender;
 import com.snut_likelion.domain.auth.repository.CertificationTokenRepository;
-import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.ExistingResourceException;
 import com.snut_likelion.global.error.exception.NotFoundException;
+import com.snut_likelion.global.provider.MailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,11 +36,11 @@ public class AuthService {
 
     @Transactional
     public void register(RegisterReq req) {
-        boolean isExists = userRepository.existsByEmailOrUsername(req.getEmail(), req.getUsername());
+        boolean isExists = userRepository.existsByEmailOrUsernameOrPhoneNumber(req.getEmail(), req.getUsername(), req.getPhoneNumber());
         if (isExists) throw new ExistingResourceException(UserErrorCode.EXISTING_USER);
         User user = req.toEntity(passwordEncoder);
         // 임시) 회원가입 시 현재 기수로 동아리 활동 정보 생성
-        user.generateCurrentLionInfo(currentGeneration, Part.BACKEND);
+//        user.generateCurrentLionInfo(currentGeneration, Part.BACKEND);
         userRepository.save(user);
     }
 
@@ -79,7 +78,7 @@ public class AuthService {
 
     @Transactional
     public void changePassword(ChangePasswordRequest req) {
-        CertificationToken certificationToken = getCertificationTokenByEmailAndCode(req.getEmail(), req.getCode());
+        CertificationToken certificationToken = this.getCertificationTokenByEmailAndCode(req.getEmail(), req.getCode());
         certificationTokenRepository.delete(certificationToken);
 
         User user = userRepository.findByEmail(req.getEmail())

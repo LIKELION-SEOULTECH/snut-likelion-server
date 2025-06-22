@@ -1,7 +1,7 @@
 package com.snut_likelion.infra.file;
 
-import com.snut_likelion.domain.project.infra.FileProvider;
 import com.snut_likelion.global.error.exception.BadRequestException;
+import com.snut_likelion.global.provider.FileProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -21,6 +21,9 @@ import java.util.UUID;
 @Slf4j
 @Component
 public class LocalFileProvider implements FileProvider {
+
+    @Value("${server.url}")
+    private String serverUrl;
 
     private final Path rootLocation;
 
@@ -61,8 +64,18 @@ public class LocalFileProvider implements FileProvider {
 
     @Override
     public String storeFile(MultipartFile file) {
-        // UUID 로 충돌 방지
-        String filename = System.currentTimeMillis() + "-" + UUID.randomUUID();
+        // 원본 파일명에서 확장자 추출
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+
+        // UUID 및 타임스탬프로 충돌 방지, 확장자 포함
+        String filename = System.currentTimeMillis()
+                + "-" + UUID.randomUUID()
+                + extension;
+
         try (InputStream input = file.getInputStream()) {
             Path destination = rootLocation.resolve(filename);
             Files.copy(input, destination, StandardCopyOption.REPLACE_EXISTING);
@@ -87,6 +100,6 @@ public class LocalFileProvider implements FileProvider {
 
     @Override
     public String buildImageUrl(String storedFileName) {
-        return String.format("http://localhost:8080/api/v1/images?imageName=%s", storedFileName);
+        return String.format("%s/api/v1/images?imageName=%s", serverUrl, storedFileName);
     }
 }

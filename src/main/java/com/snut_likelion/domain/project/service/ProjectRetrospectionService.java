@@ -27,8 +27,8 @@ public class ProjectRetrospectionService {
     }
 
     @Transactional
-    @PreAuthorize("@authChecker.isMyProject(#loginUser, #retrospectionId)")
-    public void remove(UserInfo loginUser, Long retrospectionId) {
+    @PreAuthorize("@authChecker.isMyProject(#loginUser, #projectId)")
+    public void remove(UserInfo loginUser, Long projectId, Long retrospectionId) {
         ProjectRetrospection projectRetrospection = projectRetrospectionRepository.findById(retrospectionId)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_RETROSPECTION));
         projectRetrospectionRepository.delete(projectRetrospection);

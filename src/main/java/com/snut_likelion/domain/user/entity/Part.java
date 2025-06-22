@@ -1,7 +1,9 @@
 package com.snut_likelion.domain.user.entity;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor
 public enum Part {
     PLANNING("기획"),
@@ -10,5 +12,5 @@ public enum Part {
     BACKEND("백엔드"),
     AI("AI");
 
-    private final String name;
+    private final String description;
 }
