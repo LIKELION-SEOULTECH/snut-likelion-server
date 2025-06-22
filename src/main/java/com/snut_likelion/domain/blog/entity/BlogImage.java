@@ -20,17 +20,8 @@ public class BlogImage extends BaseEntity {
     @Column(nullable = false)
     private String url;
 
-    @Column(name = "is_thumbnail", nullable = false)
-    private boolean thumbnail;
-
     @Builder
-    private BlogImage(BlogPost post, String url, boolean thumbnail) {
-        this.post = post;
-        this.url = url;
-        this.thumbnail = thumbnail;
-    }
+    public BlogImage(String url) { this.url = url; }
 
-    public void markThumbnail(boolean value) {
-        this.thumbnail = value;
-    }
+    public void setPost(BlogPost post) { this.post = post; }
 }

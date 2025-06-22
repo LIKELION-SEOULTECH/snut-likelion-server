@@ -1,160 +1,172 @@
 package com.snut_likelion.domain.blog.service;
 
-import com.snut_likelion.domain.blog.dto.UpdateBlogRequest;
-import com.snut_likelion.domain.blog.entity.BlogImage;
-import com.snut_likelion.domain.blog.entity.BlogPost;
+import com.snut_likelion.domain.blog.dto.*;
+import com.snut_likelion.domain.blog.entity.*;
 import com.snut_likelion.domain.blog.exception.BlogErrorCode;
-import com.snut_likelion.domain.blog.repository.BlogImageRepository;
 import com.snut_likelion.domain.blog.repository.BlogPostRepository;
-import com.snut_likelion.domain.blog.dto.CreateBlogRequest;
 import com.snut_likelion.domain.project.infra.FileProvider;
 import com.snut_likelion.domain.user.entity.User;
-import com.snut_likelion.domain.user.entity.Role;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BlogService {
 
     private final BlogPostRepository postRepo;
-    private final BlogImageRepository imageRepo;
-    private final UserRepository userRepo;
-    private final FileProvider fileProvider;
+    private final UserRepository     userRepo;
+    private final FileProvider       fileProvider;
+    private final BlogQueryService   queryService;
+
+    @Lazy @Autowired
+    private BlogService self;
+
+    public Long createPost(CreateBlogRequest req, UserInfo info) { return self.createPost(req, toUser(info)); }
+    public Long updatePost(Long id, UpdateBlogRequest req, UserInfo info) { return self.updatePost(id, req, toUser(info)); }
+    public void deletePost(Long id, UserInfo info) { self.deletePost(id, toUser(info)); }
+
+    public Long saveDraft(CreateBlogRequest req, UserInfo info) { return self.saveDraft(req, toUser(info)); }
+    public BlogDetailResponse loadDraft(UserInfo info) { return self.loadDraft(toUser(info)); }
+    public void discardDraft(UserInfo info) { self.discardDraft(toUser(info)); }
 
     @Transactional
-    @PreAuthorize("@authChecker.checkIsOfficialAndManager(#request.category, #loginUserInfo)")
-    public Long createPost(CreateBlogRequest request, UserInfo loginUserInfo) {
-        // 1. 작성자 조회
-        User author = userRepo.findById(loginUserInfo.getId())
-                .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
+    @PreAuthorize("@authChecker.checkIsOfficialAndManager(#req.category, principal)")
+    public Long createPost(CreateBlogRequest req, User author) {
 
-        // 2. Post 생성 및 저장
-        BlogPost post = request.toEntity(author);
-        postRepo.save(post);
+        BlogPost post = BlogPost.builder()
+                .title(req.getTitle())
+                .content(req.getContentHtml())
+                .category(req.getCategory())
+                .author(author)
+                .images(uploadImages(req.getImages()))
+                .taggedMembers(fetchUsers(req.getTaggedMemberIds()))
+                .status(Optional.ofNullable(req.getStatus())
+                        .orElse(PostStatus.PUBLISHED))
+                .build();
 
-        // 3. 이미지 업로드 & BlogImage 저장
-        List<MultipartFile> images = request.getImages();
-        if (images != null && !images.isEmpty()) {
-            // 1) 클라이언트가 보낸 값이 널이 아니면 인덱스 그대로, 아니면 0
-            int idx = (request.getThumbnailIndex() != null) ? request.getThumbnailIndex() : 0;
+        return postRepo.save(post).getId();
+    }
 
-            // 2) 음수이거나, 이미지 개수보다 크면 무조건 0으로 리셋
-            if (idx < 0 || idx >= images.size()) {
-                idx = 0;
-            }
+    @Transactional
+    @PreAuthorize("@authChecker.checkCanModify(#postId, principal)")
+    public Long updatePost(Long postId, UpdateBlogRequest req, User editor) {
 
-            // 3) i == idx 일 때만 대표 썸네일로 표시
-            for (int i = 0; i < images.size(); i++) {
-                MultipartFile mf = images.get(i);
+        BlogPost post = postRepo.findById(postId)
+                .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
 
-                // (1) 파일 저장 → 랜덤한 storedFileName 반환
-                String storedFileName = fileProvider.storeFile(mf);
+        // 기본 텍스트, 카테고리
+        req.applyTo(post);
 
-                // (2) 외부에 노출할 URL 생성
-                String url = "/images/" + storedFileName;
-
-                // (3) BlogImage 엔티티 생성
-                BlogImage img = BlogImage.builder()
-                        .post(post)
-                        .url(url)
-                        .thumbnail(i ==  idx)  // 썸네일 인덱스와 일치하면 thumbnail=true
-                        .build();
-
-                imageRepo.save(img);
-
-                // (4) 대표 썸네일 URL 설정
-                if (i == idx) {
-                    post.changeThumbnail(url);
-                }
-            }
+        // 태그 교체
+        if (req.getTaggedMemberIds() != null) {
+            post.replaceTags(fetchUsers(req.getTaggedMemberIds()));
         }
 
-        // 4. 사람 태그 처리
-        if (request.getTaggedMemberIds() != null) {
-            request.getTaggedMemberIds().forEach(id ->
-                    userRepo.findById(id).ifPresent(post::addTag));
+        // 이미지 교체
+        if (req.getImages() != null && !req.getImages().isEmpty()) {
+            post.getImages().clear();                            // orphanRemoval
+            List<BlogImage> imgs = uploadImages(req.getImages());
+            imgs.forEach(i -> i.setPost(post));
+            post.getImages().addAll(imgs);
+            post.changeThumbnail(imgs.get(0).getUrl());
         }
-
         return post.getId();
     }
 
     @Transactional
-    @PreAuthorize("@authChecker.checkCanModify(#postId, #loginUserInfo)")
-    public Long updatePost(Long postId, UpdateBlogRequest request, UserInfo loginUserInfo) {
-        // 1. 게시글 조회
+    @PreAuthorize("@authChecker.checkCanModify(#postId, principal)")
+    public void deletePost(Long postId, User editor) {
+
         BlogPost post = postRepo.findById(postId)
                 .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
 
-        // 2. 제목/본문/카테고리 수정
-        request.applyTo(post);
+        // S3(또는 로컬)에 저장된 이미지 삭제
+        post.getImages().forEach(img ->
+                fileProvider.deleteFile(img.getUrl().replace("/images/", "")));
 
-        // 3. 이미지 수정 (orphanRemoval = true 이용)
-        if (request.getImages() != null) {
-            // 기존 이미지 모두 제거 → JPA가 DB에서도 자동 삭제
-            post.getImages().clear();
-
-            List<MultipartFile> imgs = request.getImages();
-            int idx = request.getThumbnailIndex() != null
-                    ? request.getThumbnailIndex()
-                    : 0;
-
-            for (int i = 0; i < imgs.size(); i++) {
-                MultipartFile mf = imgs.get(i);
-                String stored = fileProvider.storeFile(mf);
-                String url    = "/images/" + stored;
-
-                BlogImage img = BlogImage.builder()
-                        .post(post)
-                        .url(url)
-                        .thumbnail(i == idx)
-                        .build();
-                post.getImages().add(img);
-
-                if (i == idx) {
-                    post.changeThumbnail(url);
-                }
-            }
-        }
-
-        // 4. 태그 업데이트
-        if (request.getTaggedMemberIds() != null) {
-            post.getTaggedMembers().clear();
-            request.getTaggedMemberIds().forEach(id ->
-                    userRepo.findById(id).ifPresent(post::addTag)
-            );
-        }
-
-        return post.getId();
-    }
-
-    @Transactional
-    @PreAuthorize("@authChecker.checkCanModify(#postId, #loginUserInfo)")
-    public void deletePost(Long postId, UserInfo loginUserInfo) {
-        // 1. 게시글 조회
-        BlogPost post = postRepo.findById(postId)
-                .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
-
-        // 2. 저장소에서 파일(이미지) 삭제
-        for (BlogImage img : post.getImages()) {
-            // URL에서 실제 파일명만 떼어내기
-            String storedName = img.getUrl().replace("/images/", "");
-            fileProvider.deleteFile(storedName);
-        }
-
-        // 3. DB에서 이미지 레코드 삭제
-        imageRepo.deleteAll(post.getImages());
-
-        // 4. 게시글 삭제
         postRepo.delete(post);
+    }
+
+    // 임시저장 / 덮어쓰기
+    @Transactional
+    public Long saveDraft(CreateBlogRequest req, User author) {
+
+        Optional<BlogPost> draftOpt =
+                postRepo.findByAuthorAndStatus(author, PostStatus.DRAFT);
+
+        if (draftOpt.isPresent()) {  // 덮어쓰기
+            BlogPost draft = draftOpt.get();
+            draft.updatePost(req.getTitle(), req.getContentHtml(), req.getCategory());
+            draft.replaceTags(fetchUsers(req.getTaggedMemberIds()));
+
+            if (req.getImages() != null && !req.getImages().isEmpty()) {
+                draft.getImages().clear();
+                List<BlogImage> imgs = uploadImages(req.getImages());
+                imgs.forEach(i -> i.setPost(draft));
+                draft.getImages().addAll(imgs);
+                draft.changeThumbnail(imgs.get(0).getUrl());
+            }
+            return draft.getId();
+        }
+
+        // 새로 생성
+        BlogPost newDraft = BlogPost.builder()
+                .title(req.getTitle())
+                .content(req.getContentHtml())
+                .category(req.getCategory())
+                .author(author)
+                .images(uploadImages(req.getImages()))
+                .taggedMembers(fetchUsers(req.getTaggedMemberIds()))
+                .status(PostStatus.DRAFT)
+                .build();
+
+        return postRepo.save(newDraft).getId();
+    }
+
+    // 불러오기
+    @Transactional(readOnly = true)
+    public BlogDetailResponse loadDraft(User author) {
+        BlogPost draft = postRepo.findByAuthorAndStatus(author, PostStatus.DRAFT)
+                .orElseThrow(() -> new NotFoundException(BlogErrorCode.DRAFT_NOT_FOUND));
+        return queryService.toDetailDto(draft);
+    }
+
+    // 버리기
+    @Transactional
+    public void discardDraft(User author) {
+        postRepo.deleteByAuthorAndStatus(author, PostStatus.DRAFT);
+    }
+
+    private User toUser(UserInfo info) {
+        return userRepo.findById(info.getId())
+                .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
+    }
+
+    private List<BlogImage> uploadImages(List<MultipartFile> files) {
+        if (files == null || files.isEmpty()) return List.of();
+        List<BlogImage> list = new ArrayList<>();
+        for (MultipartFile f : files) {
+            String stored = fileProvider.storeFile(f);
+            list.add(BlogImage.builder().url("/images/" + stored).build());
+        }
+        return list;
+    }
+
+    private Set<User> fetchUsers(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) return Set.of();
+        return userRepo.findAllById(ids).stream()
+                .collect(Collectors.toSet());
     }
 }
