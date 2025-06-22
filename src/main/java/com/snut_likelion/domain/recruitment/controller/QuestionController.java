@@ -25,8 +25,8 @@ public class QuestionController {
     @GetMapping("/recruitments/{recId}/questions")
     public ApiResponse<List<QuestionResponse>> getQuestions(
             @PathVariable("recId") Long recId,
-            @RequestParam("part") Part part,
-            @RequestParam("department") DepartmentType department
+            @RequestParam(value = "part", required = false) Part part,
+            @RequestParam(value = "department", required = false) DepartmentType department
             ) {
         return ApiResponse.success(questionService.getQuestions(recId, part, department), "질문 조회 성공");
     }

@@ -39,7 +39,7 @@ public class User extends BaseEntity {
     @Column(length = 200)
     private String saying; // 명언
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 100)
     private String major; // 전공
 
     @Lob

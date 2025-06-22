@@ -74,16 +74,19 @@ public class MemberController {
         memberCommandService.updateProfile(loginUser.getUserInfo(), memberId, req);
     }
 
-    @PatchMapping("/{memberId}/lion-info")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateLionInfo(
-            @AuthenticationPrincipal SnutLikeLionUser loginUser,
-            @PathVariable("memberId") Long memberId,
-            @RequestParam(value = "generation") int generation,
-            @RequestBody UpdateLionInfoRequest req
-    ) {
-        memberCommandService.upsertLionInfo(loginUser.getUserInfo(), memberId, generation, req);
-    }
+    /**
+     * 수정 막아두었습니다.
+     */
+//    @PatchMapping("/{memberId}/lion-info")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public void updateLionInfo(
+//            @AuthenticationPrincipal SnutLikeLionUser loginUser,
+//            @PathVariable("memberId") Long memberId,
+//            @RequestParam(value = "generation") int generation,
+//            @RequestBody UpdateLionInfoRequest req
+//    ) {
+//        memberCommandService.upsertLionInfo(loginUser.getUserInfo(), memberId, generation, req);
+//    }
 
     @DeleteMapping("/{memberId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
