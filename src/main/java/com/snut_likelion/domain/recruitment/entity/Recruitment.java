@@ -24,8 +24,14 @@ public class Recruitment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RecruitmentType recruitmentType;
 
-    public LocalDateTime openDate;
-    public LocalDateTime closeDate;
+    @Column(nullable = false)
+    private LocalDateTime openDate;
+
+    @Column(nullable = false)
+    private LocalDateTime closeDate;
+
+    @Column(nullable = false)
+    private boolean startNotified = false;
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions;
@@ -67,6 +73,10 @@ public class Recruitment extends BaseEntity {
         if (openDate.isAfter(closeDate)) {
             throw new BadRequestException(RecruitmentErrorCode.INVALID_DATE_RANGE);
         }
+    }
+
+    public void markStartNotified() {
+        this.startNotified = true;
     }
 
     /**

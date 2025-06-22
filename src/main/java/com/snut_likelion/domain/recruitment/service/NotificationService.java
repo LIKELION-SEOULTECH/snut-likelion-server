@@ -2,6 +2,7 @@ package com.snut_likelion.domain.recruitment.service;
 
 import com.snut_likelion.domain.recruitment.entity.Application;
 import com.snut_likelion.domain.recruitment.entity.ApplicationStatus;
+import com.snut_likelion.domain.recruitment.entity.Recruitment;
 import com.snut_likelion.domain.recruitment.entity.RecruitmentType;
 import com.snut_likelion.domain.recruitment.exception.ApplicationErrorCode;
 import com.snut_likelion.domain.user.entity.User;
@@ -10,6 +11,8 @@ import com.snut_likelion.global.provider.MailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -36,5 +39,17 @@ public class NotificationService {
                     email, name, recruitmentType.getDescription(), application.getPart().getDescription());
             default -> throw new BadRequestException(ApplicationErrorCode.INVALID_STATUS_CHANGE);
         }
+    }
+
+    @Async
+    public void sendRecruitmentStartNotice(User user, Recruitment rec) {
+        String email = user.getEmail();
+        String name = user.getUsername();
+        int generation = rec.getGeneration();
+        RecruitmentType recruitmentType = rec.getRecruitmentType();
+        LocalDateTime openDate = rec.getOpenDate();
+        LocalDateTime closeDate = rec.getCloseDate();
+
+        mailSender.sendRecruitmentStartNotification(email, name, generation, recruitmentType.getDescription(), openDate, closeDate);
     }
 }

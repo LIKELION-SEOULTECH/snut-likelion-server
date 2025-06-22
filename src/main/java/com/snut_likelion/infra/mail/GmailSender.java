@@ -9,6 +9,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -39,12 +42,9 @@ public class GmailSender implements MailSender {
     @Override
     public void sendChangePasswordLinkMail(String toEmail, String code) {
         String changePasswordUrl = clientUrl + "/auth/change-password?code=" + code;
-        SimpleMailMessage message = this.generationMessage(
-                toEmail,
-                "[서울과학기술대학교 멋쟁이사자처럼] 비밀번호 변경 페이지 주소",
-                "비밀번호 변경 페이지 주소: " + changePasswordUrl
-        );
-        mailSender.send(message);
+        String subject = "[서울과학기술대학교 멋쟁이사자처럼] 비밀번호 변경 페이지 주소";
+        String changePwdMsg = "비밀번호 변경 페이지 주소: " + changePasswordUrl;
+        mailSender.send(this.generationMessage(toEmail, subject, changePwdMsg));
         log.info("비밀번호 변경 링크 메일 발송 성공: {}, {}", toEmail, code);
     }
 
@@ -62,8 +62,7 @@ public class GmailSender implements MailSender {
                 currentGeneration, recruitmentType, currentGeneration, recruitmentType
         );
 
-        SimpleMailMessage message = this.generationMessage(toEmail, subject, interviewScheduledMsg);
-        mailSender.send(message);
+        mailSender.send(this.generationMessage(toEmail, subject, interviewScheduledMsg));
         log.info("인터뷰 메일 발송 성공: {}, {}, {}", toEmail, username, recruitmentType);
     }
 
@@ -77,8 +76,7 @@ public class GmailSender implements MailSender {
                         "다시 한번, 합격을 축하드립니다! 감사합니다 :)",
                 currentGeneration, recruitmentType, part, currentGeneration
         );
-        SimpleMailMessage message = this.generationMessage(toEmail, subject, acceptanceMsg);
-        mailSender.send(message);
+        mailSender.send(this.generationMessage(toEmail, subject, acceptanceMsg));
         log.info("합격 메일 발송 성공: {}, {}, {}", toEmail, username, recruitmentType);
     }
 
@@ -96,9 +94,35 @@ public class GmailSender implements MailSender {
                 part
         );
 
-        SimpleMailMessage message = this.generationMessage(toEmail, subject, rejectionMsg);
-        mailSender.send(message);
+        mailSender.send(this.generationMessage(toEmail, subject, rejectionMsg));
         log.info("불합격 메일 발송 성공: {}, {}, {}", toEmail, username, recruitmentType);
+    }
+
+    @Override
+    public void sendRecruitmentStartNotification(String toEmail, String username, int generation, String recruitmentType, LocalDateTime openDate, LocalDateTime closeDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String subject = String.format(
+                "[서울과학기술대학교 멋쟁이사자처럼] %s %d기 모집이 시작되었습니다!",
+                recruitmentType,
+                generation
+        );
+        String recStartMsg = String.format(
+                "안녕하세요 %s님,\n\n" +
+                        "드디어 서울과학기술대학교 멋쟁이사자처럼 %s %d기의 모집이 시작되었습니다!\n" +
+                        "📅 모집 기간: %s ~ %s 입니다!\n\n" +
+                        "지금 바로 지원하세요! → %s/recruitments/%d\n\n" +
+                        "많은 참여 부탁드립니다 :)\n",
+                username,
+                recruitmentType,
+                generation,
+                openDate.format(formatter),
+                closeDate.format(formatter),
+                clientUrl,
+                generation
+        );
+
+        mailSender.send(this.generationMessage(toEmail, subject, recStartMsg));
+        log.info("모집 안내 메일 발송 성공: {}, {}, {}, {}", toEmail, username, recruitmentType, generation);
     }
 
     private SimpleMailMessage generationMessage(String toEmail, String subject, String text) {
