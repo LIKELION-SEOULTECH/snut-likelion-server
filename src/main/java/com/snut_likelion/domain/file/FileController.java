@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -28,21 +29,15 @@ public class FileController {
 
     // 파일 다운로드
     @GetMapping(value = "/download")
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+//    @PreAuthorize("hasRole('ROLE_MANAGER')")
     public ResponseEntity<Resource> downloadFile(
             @RequestParam("fileName") String fileName,
             HttpServletRequest request
     ) throws IOException {
         Resource file = fileProvider.getFile(fileName);
 
-        String contentType = null;
-        try {
-            contentType = request.getServletContext()
-                    .getMimeType(file.getFile().getAbsolutePath());
-        } catch (IOException e) {
-            // 타입 결정 실패 시 로그만 남기고 넘어감
-            log.info("파일 타입을 결정할 수 없습니다: {}", fileName);
-        }
+        String contentType = URLConnection
+                .guessContentTypeFromName(fileName);
 
         if (contentType == null) {
             contentType = "application/octet-stream";
