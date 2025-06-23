@@ -6,7 +6,7 @@ import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ import java.util.UUID;
 
 @Slf4j
 @Component
-@Primary
+@Profile("prod")
 @RequiredArgsConstructor
 public class S3FileProvider implements FileProvider {
 
