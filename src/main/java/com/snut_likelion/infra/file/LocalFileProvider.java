@@ -4,6 +4,7 @@ import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.provider.FileProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @Slf4j
 @Component
+@Profile("dev")
 public class LocalFileProvider implements FileProvider {
 
     @Value("${server.url}")

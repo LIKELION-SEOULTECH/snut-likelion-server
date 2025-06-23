@@ -7,7 +7,6 @@ import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.entity.ProjectRetrospection;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;
-import com.snut_likelion.global.provider.FileProvider;
 import com.snut_likelion.domain.project.infra.ProjectRepository;
 import com.snut_likelion.domain.project.infra.ProjectRetrospectionRepository;
 import com.snut_likelion.domain.user.entity.User;
@@ -16,6 +15,7 @@ import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
+import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -155,11 +155,15 @@ public class ProjectCommandService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
 
-        ArrayList<String> newList = new ArrayList<>(project.getImageUrlList());
-        newList.remove(imageUrl);
-        project.setImages(newList);
+        List<String> oldList = project.getImageUrlList();
 
-        String storedName = fileProvider.extractImageName(imageUrl);
-        fileProvider.deleteFile(storedName);
+        if (oldList.contains(imageUrl)) {
+            ArrayList<String> newList = new ArrayList<>(oldList);
+            newList.remove(imageUrl);
+            project.setImages(newList);
+
+            String storedName = fileProvider.extractImageName(imageUrl);
+            fileProvider.deleteFile(storedName);
+        }
     }
 }
