@@ -186,6 +186,7 @@ public class ApplicationCommandService {
         // 메일 발송
         User user = application.getUser();
         if (newStatus == ApplicationStatus.ACCEPTED) {
+            user.updateMajorFromApplication(application);
             Role role = application.getDepartmentType() == null ? Role.ROLE_USER : Role.ROLE_MANAGER;
             user.generateCurrentLionInfo(currentGeneration, application.getPart(), role);
         }
