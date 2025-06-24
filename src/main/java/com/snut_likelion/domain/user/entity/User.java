@@ -2,6 +2,7 @@ package com.snut_likelion.domain.user.entity;
 
 
 import com.snut_likelion.domain.recruitment.entity.Application;
+import com.snut_likelion.domain.recruitment.entity.DepartmentType;
 import com.snut_likelion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -96,13 +97,18 @@ public class User extends BaseEntity {
         lionInfo.setUser(this);
     }
 
-    public void generateCurrentLionInfo(int currentGeneration, Part part, Role role) {
+    public void generateCurrentLionInfo(int currentGeneration, Part part, Role role, DepartmentType departmentType) {
         LionInfo lionInfo = LionInfo.builder()
                 .generation(currentGeneration)
                 .part(part)
                 .role(role)
+                .departmentType(departmentType)
                 .build();
 
         this.addLionInfo(lionInfo);
+    }
+
+    public void updateUsername(String username) {
+        this.username = username;
     }
 }
