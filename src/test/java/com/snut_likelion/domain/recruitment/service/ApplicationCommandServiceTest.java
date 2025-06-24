@@ -524,7 +524,7 @@ class ApplicationCommandServiceTest {
                 .id(1L)
                 .status(ApplicationStatus.INTERVIEW_SCHEDULED)
                 .part(Part.AI)
-                .departmentType(null)
+                .departmentType(DepartmentType.OPERATION)
                 .build();
         app.setUser(user);
         when(applicationRepository.findByIdWithUser(appId)).thenReturn(Optional.of(app));
@@ -537,8 +537,9 @@ class ApplicationCommandServiceTest {
         assertAll(
                 () -> assertThat(app.getStatus()).isEqualTo(ApplicationStatus.ACCEPTED),
                 () -> assertThat(user.getLionInfos()).hasSize(1),
-                () -> assertThat(lionInfo.getRole()).isEqualTo(Role.ROLE_USER),
+                () -> assertThat(lionInfo.getRole()).isEqualTo(Role.ROLE_MANAGER),
                 () -> assertThat(lionInfo.getPart()).isEqualTo(Part.AI),
+                () -> assertThat(lionInfo.getDepartmentType()).isEqualTo(DepartmentType.OPERATION),
                 () -> verify(notificationService).sendNotification(user, ApplicationStatus.ACCEPTED, app)
         );
     }

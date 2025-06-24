@@ -187,7 +187,7 @@ public class ApplicationCommandService {
         User user = application.getUser();
         if (newStatus == ApplicationStatus.ACCEPTED) {
             Role role = application.getDepartmentType() == null ? Role.ROLE_USER : Role.ROLE_MANAGER;
-            user.generateCurrentLionInfo(currentGeneration, application.getPart(), role);
+            user.generateCurrentLionInfo(currentGeneration, application.getPart(), role, application.getDepartmentType());
         }
 
         notificationService.sendNotification(user, newStatus, application);
