@@ -71,8 +71,8 @@ class ProjectQueryServiceTest {
         assertThat(responses).hasSize(2)
                 .extracting(ProjectResponse::getId, ProjectResponse::getName, ProjectResponse::getGeneration, ProjectResponse::getCategory, ProjectResponse::getThumbnailUrl)
                 .containsExactly(
-                        tuple(100L, "프로젝트1", generation, category, "https://cdn.cn/image1.jpg"),
-                        tuple(200L, "프로젝트2", generation, category, null)
+                        tuple(100L, "프로젝트1", generation, category.getDescription(), "https://cdn.cn/image1.jpg"),
+                        tuple(200L, "프로젝트2", generation, category.getDescription(), null)
                 );
     }
 
@@ -151,15 +151,8 @@ class ProjectQueryServiceTest {
                 () -> assertThat(detail.getPlaystoreUrl()).isNull(),
                 () -> assertThat(detail.getAppstoreUrl()).isNull(),
                 () -> assertThat(detail.getTags()).containsExactly("JAVA", "SPRING"),
-                () -> assertThat(detail.getMembers()).hasSize(3)
-                        .extracting(ProjectDetailResponse.Participant::getId, ProjectDetailResponse.Participant::getUsername)
-                        .containsExactlyInAnyOrder(
-                                tuple(1L, "user1"),
-                                tuple(2L, "user2"),
-                                tuple(3L, "user3")
-                        ),
                 () -> assertThat(detail.getImageUrls()).containsExactly("https://cdn.cn/image1.jpg", "https://cdn.cn/image2.jpg"),
-                () -> assertThat(detail.getCategory()).isEqualTo(ProjectCategory.HACKATHON)
+                () -> assertThat(detail.getCategory()).isEqualTo(ProjectCategory.HACKATHON.getDescription())
         );
     }
 

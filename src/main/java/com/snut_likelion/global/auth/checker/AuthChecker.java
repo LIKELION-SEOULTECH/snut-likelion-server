@@ -32,9 +32,7 @@ public class AuthChecker {
     public boolean isMyProject(UserInfo userInfo, Long projectId) {
         List<LionInfo> lionInfos = lionInfoRepository.findByUser_Id(userInfo.getId());
         List<Long> lionInfoIds = lionInfos.stream().map(LionInfo::getId).toList();
-        boolean isMyProject = projectParticipationRepository.existsByProject_IdAndLionInfo_Ids(projectId, lionInfoIds);
-
-        return isMyProject || this.hasManagerAuthority(userInfo);
+        return projectParticipationRepository.existsByProject_IdAndLionInfo_Ids(projectId, lionInfoIds);
     }
 
     public boolean isMyApplication(UserInfo userInfo, Long appId) {

@@ -222,7 +222,7 @@ class ProjectCommandServiceTest {
                 .retrospections(List.of(existingDto, newDto))
                 .build();
         // When
-        projectCommandService.modify(loginUser, id, req);
+        projectCommandService.modify(id, req);
 
         // Then
         assertAll(
@@ -263,7 +263,7 @@ class ProjectCommandServiceTest {
         when(fileProvider.extractImageName("http://cdn/b.jpg")).thenReturn("b.jpg");
 
         // When
-        projectCommandService.remove(loginUser, id);
+        projectCommandService.remove(id);
 
         // Then
         verify(projectRepository).delete(project);
@@ -289,7 +289,7 @@ class ProjectCommandServiceTest {
         when(fileProvider.extractImageName("http://cdn/x.png")).thenReturn("x.png");
 
         // When
-        projectCommandService.removeImage(loginUser, id, "http://cdn/x.png");
+        projectCommandService.removeImage(id, "http://cdn/x.png");
 
         // Then
         assertThat(project.getImageUrlList()).containsExactly("http://cdn/y.png");

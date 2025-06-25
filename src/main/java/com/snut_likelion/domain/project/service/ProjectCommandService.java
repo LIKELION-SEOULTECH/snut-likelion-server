@@ -13,12 +13,10 @@ import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.repository.LionInfoRepository;
 import com.snut_likelion.domain.user.repository.UserRepository;
-import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
 import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,8 +65,7 @@ public class ProjectCommandService {
 
 
     @Transactional
-    @PreAuthorize("@authChecker.isMyProject(#loginUser, #id)")
-    public void modify(UserInfo loginUser, Long id, UpdateProjectRequest req) {
+    public void modify(Long id, UpdateProjectRequest req) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
 
@@ -84,7 +81,7 @@ public class ProjectCommandService {
 
     private void upsertRetrospections(List<RetrospectionDto> retrospections, Project project) {
         if (retrospections == null || retrospections.isEmpty()) {
-            throw new BadRequestException(ProjectErrorCode.RETROSPECTION_IS_NOT_PROVIDED);
+            return;
         }
 
         retrospections.forEach(retrospection -> {
@@ -114,7 +111,7 @@ public class ProjectCommandService {
 
     private void storeProjectImages(List<MultipartFile> files, Project project) {
         if (files == null || files.isEmpty()) {
-            return; // 이미지가 없으면 그냥 리턴
+            throw new BadRequestException(ProjectErrorCode.PROJECT_IMAGE_NOT_PROVIDED);
         }
 
         List<String> imageUrls = new ArrayList<>();
@@ -135,8 +132,7 @@ public class ProjectCommandService {
     }
 
     @Transactional
-    @PreAuthorize("@authChecker.isMyProject(#loginUser, #id)")
-    public void remove(UserInfo loginUser, Long id) {
+    public void remove(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
         projectRepository.delete(project);
@@ -147,8 +143,7 @@ public class ProjectCommandService {
     }
 
     @Transactional
-    @PreAuthorize("@authChecker.isMyProject(#loginUser, #id)")
-    public void removeImage(UserInfo loginUser, Long id, String imageUrl) {
+    public void removeImage(Long id, String imageUrl) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
 
