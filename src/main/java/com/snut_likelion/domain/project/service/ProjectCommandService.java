@@ -7,15 +7,16 @@ import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.entity.ProjectRetrospection;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;
-import com.snut_likelion.global.provider.FileProvider;
 import com.snut_likelion.domain.project.infra.ProjectRepository;
 import com.snut_likelion.domain.project.infra.ProjectRetrospectionRepository;
+import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.repository.LionInfoRepository;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
+import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -40,31 +41,28 @@ public class ProjectCommandService {
         Project project = req.toEntityWithValue();
         project.setTags(req.getTags());
         this.storeProjectImages(req.getImages(), project);
-        this.connectParticipants(req.getMemberIds(), project);
         this.connectRetrospections(req.getRetrospections(), project);
         projectRepository.save(project);
     }
 
     private void connectRetrospections(List<RetrospectionDto> retrospections, Project project) {
         if (retrospections == null || retrospections.isEmpty()) {
-            return; // 회고가 없으면 그냥 리턴
+            throw new BadRequestException(ProjectErrorCode.RETROSPECTION_IS_NOT_PROVIDED);
         }
 
-        retrospections.stream()
-                .map(this::createRetrospection)
-                .forEach(project::addRetrospection);
-    }
+        retrospections
+                .forEach(retrospectionDto -> {
+                    Long memberId = retrospectionDto.getMemberId();
 
-    private void connectParticipants(List<Long> memberIds, Project project) {
-        if (memberIds == null || memberIds.isEmpty()) {
-            throw new BadRequestException(ProjectErrorCode.MEMBER_IDS_NOT_PROVIDED);
-        }
+                    LionInfo lionInfo = lionInfoRepository.findByUser_IdAndGeneration(memberId, project.getGeneration())
+                            .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_LION_INFO));
 
-        memberIds.stream()
-                .map(memberId -> lionInfoRepository.findByUser_IdAndGeneration(memberId, project.getGeneration())
-                        .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_LION_INFO)))
-                .map(li -> new ProjectParticipation(li, project))
-                .forEach(project::addParticipation);
+                    ProjectParticipation projectParticipation = new ProjectParticipation(lionInfo, project);
+                    project.addParticipation(projectParticipation);
+
+                    ProjectRetrospection retrospection = this.createRetrospection(retrospectionDto);
+                    project.addRetrospection(retrospection);
+                });
     }
 
 
@@ -78,20 +76,15 @@ public class ProjectCommandService {
 
         project.setTags(req.getTags());
 
-        if (req.getMemberIds() != null && !req.getMemberIds().isEmpty()) {
-            project.getParticipations().clear();
-            this.connectParticipants(req.getMemberIds(), project);
-        }
+        this.storeProjectImages(req.getNewImages(), project);
 
         // 이미 존재하는 회고는 업데이트하고, 새로운 회고는 추가
         this.upsertRetrospections(req.getRetrospections(), project);
-
-        this.storeProjectImages(req.getNewImages(), project);
     }
 
     private void upsertRetrospections(List<RetrospectionDto> retrospections, Project project) {
         if (retrospections == null || retrospections.isEmpty()) {
-            return;
+            throw new BadRequestException(ProjectErrorCode.RETROSPECTION_IS_NOT_PROVIDED);
         }
 
         retrospections.forEach(retrospection -> {
@@ -101,6 +94,10 @@ public class ProjectCommandService {
                             existingRetrospection ->
                                     existingRetrospection.updateContent(retrospection.getContent()),
                             () -> {
+                                Long memberId = retrospection.getMemberId();
+                                LionInfo lionInfo = lionInfoRepository.findByUser_IdAndGeneration(memberId, project.getGeneration())
+                                        .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_LION_INFO));
+                                project.addParticipation(new ProjectParticipation(lionInfo, project));
                                 project.addRetrospection(this.createRetrospection(retrospection));
                             }
                     );

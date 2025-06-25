@@ -15,7 +15,7 @@ public enum ProjectErrorCode implements BaseError {
     NOT_FOUND_IMAGE("NOT_FOUND", "프로젝트 이미지를 찾을 수 없습니다."),
     NOT_FOUND_RETROSPECTION("NOT_FOUND", "프로젝트 회고를 찾을 수 없습니다."),
     NOT_FOUND_LION_INFO("NOT_FOUND", "해당 참여자의 라이온 정보를 찾을 수 없습니다."),
-    MEMBER_IDS_NOT_PROVIDED("BAD_REQUEST", "참여자 ID가 제공되지 않았습니다."),
+    RETROSPECTION_IS_NOT_PROVIDED("BAD_REQUEST", "회고 목록이 제공되지 않았습니다."),
     ;
 
     private final String code;
