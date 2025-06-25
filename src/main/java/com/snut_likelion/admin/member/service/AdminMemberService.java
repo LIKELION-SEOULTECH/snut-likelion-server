@@ -10,12 +10,14 @@ import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.error.exception.NotFoundException;
-import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +27,6 @@ public class AdminMemberService {
 
     private final UserRepository userRepository;
     private final AdminMemberQueryRepository queryRepository;
-    private final FileProvider fileProvider;
 
     public MemberPageResponse getMemberList(Integer generation, Part part, Role role, int page, String keyword) {
         PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE);
@@ -53,23 +54,22 @@ public class AdminMemberService {
     }
 
     @Transactional
-    public void deleteMember(Long memberId) {
-        userRepository.findById(memberId)
-                .ifPresentOrElse(
-                        user -> {
-                            this.removePrevProfileImage(user);
-                            userRepository.delete(user);
-                        },
-                        () -> {
-                            throw new NotFoundException(UserErrorCode.NOT_FOUND);
-                        }
-                );
-    }
+    public void deleteMember(Long memberId, int generation) {
+        User member = userRepository.findWithLionUserById(memberId)
+                .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
 
-    private void removePrevProfileImage(User user) {
-        if (user.getProfileImageUrl() != null) {
-            String profileImageName = fileProvider.extractImageName(user.getProfileImageUrl());
-            fileProvider.deleteFile(profileImageName);
+        // 기존 lionInfos 복사
+        List<LionInfo> lionInfos = new ArrayList<>(member.getLionInfos());
+
+        // 삭제 대상이 있는지 검사
+        boolean exists = lionInfos.stream()
+                .anyMatch(info -> info.getGeneration() == generation);
+        if (!exists) {
+            throw new NotFoundException(UserErrorCode.NOT_FOUND_LION_INFO);
         }
+
+        // 실제 삭제
+        lionInfos.removeIf(info -> info.getGeneration() == generation);
+        member.setLionInfos(lionInfos);
     }
 }

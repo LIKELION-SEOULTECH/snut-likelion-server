@@ -45,8 +45,11 @@ public class AdminMemberController {
 
     @DeleteMapping("/{memberId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMember(@PathVariable Long memberId) {
-        adminMemberService.deleteMember(memberId);
+    public void deleteLionInfo(
+            @PathVariable("memberId") Long memberId,
+            @RequestParam("generation") int generation
+    ) {
+        adminMemberService.deleteMember(memberId, generation);
     }
 
 }

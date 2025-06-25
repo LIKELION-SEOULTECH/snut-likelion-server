@@ -111,4 +111,9 @@ public class User extends BaseEntity {
     public void updateUsername(String username) {
         this.username = username;
     }
+
+    public void setLionInfos(List<LionInfo> newLionInfos) {
+        this.lionInfos.clear();
+        this.lionInfos.addAll(newLionInfos);
+    }
 }
