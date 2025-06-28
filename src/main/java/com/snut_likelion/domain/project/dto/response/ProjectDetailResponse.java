@@ -56,6 +56,11 @@ public class ProjectDetailResponse {
                 .category(project.getCategory())
                 .tags(project.getTagList())
                 .imageUrls(project.getImageUrlList())
+                .members(project.getParticipations().stream()
+                        .map(p -> p.getLionInfo().getUser())
+                        .map(Participant::from)
+                        .toList()
+                )
                 .build();
     }
 
