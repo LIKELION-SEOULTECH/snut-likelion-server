@@ -1,6 +1,5 @@
 package com.snut_likelion.domain.user.controller;
 
-import com.snut_likelion.domain.user.dto.request.UpdateLionInfoRequest;
 import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
 import com.snut_likelion.domain.user.dto.response.LionInfoDetailsResponse;
 import com.snut_likelion.domain.user.dto.response.MemberDetailResponse;
@@ -46,6 +45,16 @@ public class MemberController {
         );
     }
 
+    @GetMapping("/me")
+    public ApiResponse<MemberDetailResponse> getMyDetails(
+            @AuthenticationPrincipal SnutLikeLionUser loginUser
+    ) {
+        return ApiResponse.success(
+                memberQueryService.getMemberDetailsById(loginUser.getId()),
+                "멤버 상세 정보 조회 성공"
+        );
+    }
+
     @GetMapping("/{memberId}")
     public ApiResponse<MemberDetailResponse> getMemberDetails(
             @PathVariable("memberId") Long memberId
@@ -87,7 +96,6 @@ public class MemberController {
 //    ) {
 //        memberCommandService.upsertLionInfo(loginUser.getUserInfo(), memberId, generation, req);
 //    }
-
     @DeleteMapping("/{memberId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void withdrawMember(
