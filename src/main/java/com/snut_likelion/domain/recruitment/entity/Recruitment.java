@@ -34,6 +34,7 @@ public class Recruitment extends BaseEntity {
     private boolean startNotified = false;
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("orderNum ASC")
     private List<Question> questions;
 
     @OneToMany(mappedBy = "recruitment", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -82,13 +83,15 @@ public class Recruitment extends BaseEntity {
     /**
      * === 연관관계 메서드 ===
      */
-    public void addQuestion(Question question) {
-        this.questions.add(question);
-        question.setRecruitment(this);
-    }
 
     public void addApplication(Application application) {
         this.applications.add(application);
         application.setRecruitment(this);
+    }
+
+    public void setQuestions(List<Question> questions) {
+        this.questions.clear();
+        this.questions.addAll(questions);
+        questions.forEach(question -> question.setRecruitment(this));
     }
 }

@@ -21,10 +21,10 @@ public class CreateRecruitmentRequest {
     @NotEmpty(message = "모집 유형을 입력해주세요.")
     private String recruitmentType;
 
-    @NotEmpty(message = "모집 시작 시각을 입력해주세요.")
+    @NotNull(message = "모집 시작 시각을 입력해주세요.")
     private LocalDateTime openDate;
 
-    @NotEmpty(message = "모집 종료 시각을 입력해주세요.")
+    @NotNull(message = "모집 종료 시각을 입력해주세요.")
     private LocalDateTime closeDate;
 
     @Builder

@@ -5,11 +5,10 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum QuestionType {
-
-    SHORT("단답형"),
-    LONG("장문형"),
-    RADIO_BUTTON("라디오 버튼형"),
+public enum QuestionTarget {
+    COMMON("공통 질문"), // 공통 질문
+    PART("파트 질문"), // 파트 질문
+    DEPARTMENT("부서 질문"), // 부서 질문
     ;
 
     private final String description;
