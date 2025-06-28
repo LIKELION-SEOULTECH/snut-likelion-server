@@ -2,7 +2,7 @@ package com.snut_likelion.domain.recruitment.schedule;
 
 import com.snut_likelion.domain.recruitment.entity.Recruitment;
 import com.snut_likelion.domain.recruitment.infra.RecruitmentRepository;
-import com.snut_likelion.domain.recruitment.service.NotificationService;
+import com.snut_likelion.admin.recruitment.service.NotificationService;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

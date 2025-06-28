@@ -10,9 +10,7 @@ import com.snut_likelion.domain.recruitment.infra.ApplicationRepository;
 import com.snut_likelion.domain.recruitment.infra.QuestionFilter;
 import com.snut_likelion.domain.recruitment.infra.QuestionRepository;
 import com.snut_likelion.domain.recruitment.infra.RecruitmentRepository;
-import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.entity.Part;
-import com.snut_likelion.domain.user.entity.Role;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;
@@ -59,9 +57,6 @@ class ApplicationCommandServiceTest {
     UserRepository userRepository;
 
     @Mock
-    NotificationService notificationService;
-
-    @Mock
     QuestionFilter questionFilter;
 
     @InjectMocks
@@ -87,20 +82,20 @@ class ApplicationCommandServiceTest {
                 .email("test@example.com")
                 .build();
 
-        q1 = this.createQuestion(1L, QuestionType.COMMON, null, null);
-        q2 = this.createQuestion(2L, QuestionType.COMMON, null, null);
-        q3 = this.createQuestion(3L, QuestionType.PART, Part.BACKEND, null);
-        q4 = this.createQuestion(4L, QuestionType.PART, Part.BACKEND, null);
-        q5 = this.createQuestion(5L, QuestionType.DEPARTMENT, null, DepartmentType.OPERATION);
-        q6 = this.createQuestion(6L, QuestionType.DEPARTMENT, null, DepartmentType.OPERATION);
+        q1 = this.createQuestion(1L, QuestionTarget.COMMON, null, null);
+        q2 = this.createQuestion(2L, QuestionTarget.COMMON, null, null);
+        q3 = this.createQuestion(3L, QuestionTarget.PART, Part.BACKEND, null);
+        q4 = this.createQuestion(4L, QuestionTarget.PART, Part.BACKEND, null);
+        q5 = this.createQuestion(5L, QuestionTarget.DEPARTMENT, null, DepartmentType.OPERATION);
+        q6 = this.createQuestion(6L, QuestionTarget.DEPARTMENT, null, DepartmentType.OPERATION);
 
     }
 
-    private Question createQuestion(Long id, QuestionType type, Part part, DepartmentType departmentType) {
+    private Question createQuestion(Long id, QuestionTarget type, Part part, DepartmentType departmentType) {
         return Question.builder()
                 .id(id)
                 .text("q" + id)
-                .questionType(type)
+                .questionTarget(type)
                 .part(part)
                 .departmentType(departmentType)
                 .build();
@@ -495,66 +490,6 @@ class ApplicationCommandServiceTest {
         // then
         verify(fileProvider).deleteFile("stored.pdf");
         verify(applicationRepository).delete(app);
-    }
-
-    @Test
-    void updateApplicationStatus_success_and_notify_INTERVIEW_SCHEDULED() {
-        // given
-        Application app = Application.builder()
-                .id(1L)
-                .status(ApplicationStatus.SUBMITTED)
-                .part(Part.AI)
-                .departmentType(null)
-                .build();
-        app.setUser(user);
-        when(applicationRepository.findByIdWithUser(appId)).thenReturn(Optional.of(app));
-
-        // when
-        service.updateApplicationStatus(appId, ApplicationStatus.INTERVIEW_SCHEDULED);
-
-        // then
-        assertThat(app.getStatus()).isEqualTo(ApplicationStatus.INTERVIEW_SCHEDULED);
-        verify(notificationService).sendNotification(user, ApplicationStatus.INTERVIEW_SCHEDULED, app);
-    }
-
-    @Test
-    void updateApplicationStatus_success_and_notify_ACCEPTED() {
-        // given
-        Application app = Application.builder()
-                .id(1L)
-                .status(ApplicationStatus.INTERVIEW_SCHEDULED)
-                .part(Part.AI)
-                .departmentType(DepartmentType.OPERATION)
-                .build();
-        app.setUser(user);
-        when(applicationRepository.findByIdWithUser(appId)).thenReturn(Optional.of(app));
-
-        // when
-        service.updateApplicationStatus(appId, ApplicationStatus.ACCEPTED);
-
-        // then
-        LionInfo lionInfo = user.getLionInfos().get(0);
-        assertAll(
-                () -> assertThat(app.getStatus()).isEqualTo(ApplicationStatus.ACCEPTED),
-                () -> assertThat(user.getLionInfos()).hasSize(1),
-                () -> assertThat(lionInfo.getRole()).isEqualTo(Role.ROLE_MANAGER),
-                () -> assertThat(lionInfo.getPart()).isEqualTo(Part.AI),
-                () -> assertThat(lionInfo.getDepartmentType()).isEqualTo(DepartmentType.OPERATION),
-                () -> verify(notificationService).sendNotification(user, ApplicationStatus.ACCEPTED, app)
-        );
-    }
-
-    @Test
-    void updateApplicationStatus_fromDraft_throws() {
-        // given
-        Application app = Application.builder()
-                .status(ApplicationStatus.DRAFT).build();
-        when(applicationRepository.findByIdWithUser(appId)).thenReturn(Optional.of(app));
-
-        // when / then
-        assertThatThrownBy(() -> service.updateApplicationStatus(appId, ApplicationStatus.DRAFT))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage(ApplicationErrorCode.DRAFT_APPLICATION_CANNOT_UPDATE_STATUS.getMessage());
     }
 
 }

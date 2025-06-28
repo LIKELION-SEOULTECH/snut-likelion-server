@@ -19,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminProjectService {
 
-    private final int PAGE_SIZE = 10;
+    private final int PAGE_SIZE = 8;
 
     private final AdminProjectQueryRepository queryRepository;
     private final ProjectCommandService projectCommandService;

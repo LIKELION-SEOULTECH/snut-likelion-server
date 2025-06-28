@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminMemberService {
 
-    private final int PAGE_SIZE = 10;
+    private final int PAGE_SIZE = 8;
 
     private final UserRepository userRepository;
     private final AdminMemberQueryRepository queryRepository;
