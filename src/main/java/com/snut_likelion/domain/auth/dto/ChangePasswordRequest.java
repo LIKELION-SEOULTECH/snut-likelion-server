@@ -1,29 +1,34 @@
 package com.snut_likelion.domain.auth.dto;
 
 import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChangePasswordRequest {
 
-    private String code;
-    private String email;
+    @NotEmpty(message = "기존 비밀번호를 입력해주세요.")
+    private String oldPassword;
+
+    @NotEmpty(message = "새 비밀번호를 입력해주세요.")
     private String newPassword;
-    private String newPasswordConfirm;
+
+    @NotEmpty(message = "새 비밀번호 확인을 입력해주세요.")
+    private String confirmPassword;
 
     @Builder
-    public ChangePasswordRequest(String code, String email, String newPassword, String newPasswordConfirm) {
-        this.code = code;
-        this.email = email;
+    public ChangePasswordRequest(String oldPassword, String newPassword, String confirmPassword) {
+        this.oldPassword = oldPassword;
         this.newPassword = newPassword;
-        this.newPasswordConfirm = newPasswordConfirm;
+        this.confirmPassword = confirmPassword;
     }
 
-    @AssertTrue(message = "비밀번호와 비밀번호 확인이 일치하지 않습니다.")
+    @AssertTrue(message = "새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.")
     public boolean isPasswordMatching() {
-        return newPassword != null && newPassword.equals(newPasswordConfirm);
+        return newPassword != null && newPassword.equals(confirmPassword);
     }
 }
