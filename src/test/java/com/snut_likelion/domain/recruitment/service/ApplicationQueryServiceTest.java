@@ -43,6 +43,7 @@ class ApplicationQueryServiceTest {
                 .id(userId)
                 .username("user1")
                 .email("test@test.com")
+                .phoneNumber("01000000000")
                 .build();
 
         Question q1 = this.createQuestion(1L, QuestionTarget.COMMON, null);
@@ -74,6 +75,7 @@ class ApplicationQueryServiceTest {
                 () -> assertThat(response.size()).isEqualTo(1),
                 () -> assertThat(myApp.getId()).isEqualTo(app1.getId()),
                 () -> assertThat(myApp.getUsername()).isEqualTo(me.getUsername()),
+                () -> assertThat(myApp.getPhoneNumber()).isEqualTo(me.getPhoneNumber()),
                 () -> assertThat(myApp.getMajor()).isEqualTo(app1.getMajor()),
                 () -> assertThat(myApp.getInSchool()).isTrue(),
                 () -> assertThat(myApp.getStudentId()).isEqualTo(String.valueOf(20000000 + app1.getId())),
