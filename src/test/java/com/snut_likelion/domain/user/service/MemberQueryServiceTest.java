@@ -186,6 +186,8 @@ public class MemberQueryServiceTest {
     @Test
     void getMemberDetailsById_whenNotFound_throwsException() {
         Long memberId = 99L;
+        when(lionInfoRepository.findGenerationsByUser_Id(memberId))
+                .thenReturn(List.of(13));
         when(userRepository.findUserDetailsByUserId(memberId))
                 .thenReturn(Optional.empty());
 
