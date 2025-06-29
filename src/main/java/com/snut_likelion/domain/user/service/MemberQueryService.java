@@ -49,6 +49,14 @@ public class MemberQueryService {
     }
 
     @Transactional(readOnly = true)
+    public MemberDetailResponse getMyDetails(Long memberId) {
+        User user = userRepository.findUserDetailsByUserId(memberId)
+                .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
+        List<Integer> generations = lionInfoRepository.findGenerationsByUser_Id(memberId);
+        return MemberDetailResponse.of(user, generations);
+    }
+
+    @Transactional(readOnly = true)
     public MemberDetailResponse getMemberDetailsById(Long memberId) {
         User user = userRepository.findUserDetailsByUserId(memberId)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));

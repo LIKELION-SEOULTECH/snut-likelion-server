@@ -26,6 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findWithLionUserById(Long userId);
 
     @Query("select u from User u " +
+            "join fetch u.lionInfos " +
             "left join fetch u.portfolioLinks " +
             "where u.id = :userId")
     Optional<User> findUserDetailsByUserId(@Param("userId") Long userId);
