@@ -37,6 +37,10 @@ public class ProjectRetrospectionController {
             @PathVariable("projectId") Long projectId,
             @PathVariable("retrospectionId") Long retrospectionId
     ) {
+<<<<<<< HEAD
         projectRetrospectionService.remove(projectId, retrospectionId);
+=======
+        projectRetrospectionService.remove(loginUser.getUserInfo(), projectId, retrospectionId);
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     }
 }

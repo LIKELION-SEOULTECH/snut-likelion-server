@@ -2,7 +2,10 @@ package com.snut_likelion.domain.user.entity;
 
 
 import com.snut_likelion.domain.recruitment.entity.Application;
+<<<<<<< HEAD
 import com.snut_likelion.domain.recruitment.entity.DepartmentType;
+=======
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 import com.snut_likelion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -97,17 +100,25 @@ public class User extends BaseEntity {
         lionInfo.setUser(this);
     }
 
+<<<<<<< HEAD
     public void generateCurrentLionInfo(int currentGeneration, Part part, Role role, DepartmentType departmentType) {
+=======
+    public void generateCurrentLionInfo(int currentGeneration, Part part, Role role) {
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
         LionInfo lionInfo = LionInfo.builder()
                 .generation(currentGeneration)
                 .part(part)
                 .role(role)
+<<<<<<< HEAD
                 .departmentType(departmentType)
+=======
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
                 .build();
 
         this.addLionInfo(lionInfo);
     }
 
+<<<<<<< HEAD
     public void updateUsername(String username) {
         this.username = username;
     }
@@ -115,5 +126,9 @@ public class User extends BaseEntity {
     public void setLionInfos(List<LionInfo> newLionInfos) {
         this.lionInfos.clear();
         this.lionInfos.addAll(newLionInfos);
+=======
+    public void updateMajorFromApplication(Application application) {
+        this.major = application.getMajor();
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     }
 }

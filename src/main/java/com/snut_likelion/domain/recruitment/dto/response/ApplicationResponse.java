@@ -25,9 +25,15 @@ public class ApplicationResponse {
     public ApplicationResponse(Long id, String username, Part part, DepartmentType departmentType, ApplicationStatus status, LocalDateTime submittedAt) {
         this.id = id;
         this.username = username;
+<<<<<<< HEAD
         this.part = part.getDescription();
         this.departmentType = departmentType != null ? departmentType.getDescription() : null;
         this.status = status.getDescription();
+=======
+        this.part = part.name();
+        this.departmentType = departmentType != null ? departmentType.name() : null;
+        this.status = status.name();
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
         this.submittedAt = submittedAt;
     }
 }

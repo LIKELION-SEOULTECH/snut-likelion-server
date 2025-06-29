@@ -5,8 +5,14 @@ import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsRespo
 import com.snut_likelion.domain.recruitment.entity.Answer;
 import com.snut_likelion.domain.recruitment.entity.Application;
 import com.snut_likelion.domain.recruitment.entity.Question;
+<<<<<<< HEAD
 import com.snut_likelion.domain.recruitment.entity.QuestionTarget;
 import com.snut_likelion.domain.recruitment.exception.ApplicationErrorCode;
+=======
+import com.snut_likelion.domain.recruitment.entity.QuestionType;
+import com.snut_likelion.domain.recruitment.exception.ApplicationErrorCode;
+import com.snut_likelion.domain.recruitment.infra.ApplicationQueryRepository;
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 import com.snut_likelion.domain.recruitment.infra.ApplicationRepository;
 import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.User;
@@ -22,8 +28,11 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
+<<<<<<< HEAD
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+=======
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +41,12 @@ class ApplicationQueryServiceTest {
     @Mock
     private ApplicationRepository applicationRepository;
 
+<<<<<<< HEAD
+=======
+    @Mock
+    private ApplicationQueryRepository applicationQueryRepository;
+
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     @InjectMocks
     private ApplicationQueryService applicationQueryService;
 
@@ -46,10 +61,17 @@ class ApplicationQueryServiceTest {
                 .email("test@test.com")
                 .build();
 
+<<<<<<< HEAD
         Question q1 = this.createQuestion(1L, QuestionTarget.COMMON, null);
         Question q2 = this.createQuestion(2L, QuestionTarget.COMMON, null);
         Question q3 = this.createQuestion(3L, QuestionTarget.PART, Part.PLANNING);
         Question q4 = this.createQuestion(4L, QuestionTarget.PART, Part.PLANNING);
+=======
+        Question q1 = this.createQuestion(1L, QuestionType.COMMON, null);
+        Question q2 = this.createQuestion(2L, QuestionType.COMMON, null);
+        Question q3 = this.createQuestion(3L, QuestionType.PART, Part.PLANNING);
+        Question q4 = this.createQuestion(4L, QuestionType.PART, Part.PLANNING);
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 
         LocalDateTime submittedAt = LocalDateTime.of(2025, 6, 22, 10, 0);
         Application app1 = this.createApplication(1L, Part.PLANNING, submittedAt);
@@ -67,7 +89,11 @@ class ApplicationQueryServiceTest {
 //        Application app4 = this.createApplication(4L, Part.BACKEND, LocalDateTime.of(2025, 6, 22, 13, 0));
 //        Application app5 = this.createApplication(5L, Part.AI, LocalDateTime.of(2025, 6, 22, 14, 0));
 
+<<<<<<< HEAD
         when(applicationRepository.findMyApplication(eq(userId), anyInt()))
+=======
+        when(applicationRepository.findMyApplication(userId))
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
                 .thenReturn(Optional.of(app1));
 
         // When
@@ -102,7 +128,11 @@ class ApplicationQueryServiceTest {
     void getMyApplication_whenNotFound_throwsNotFound() {
         // Given
         Long userId = 1L;
+<<<<<<< HEAD
         when(applicationRepository.findMyApplication(eq(userId), anyInt()))
+=======
+        when(applicationRepository.findMyApplication(userId))
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
                 .thenReturn(Optional.empty());
 
         // When / Then
@@ -121,11 +151,19 @@ class ApplicationQueryServiceTest {
                 .build();
     }
 
+<<<<<<< HEAD
     private Question createQuestion(Long id, QuestionTarget type, Part part) {
         return Question.builder()
                 .id(id)
                 .text("q" + id)
                 .questionTarget(type)
+=======
+    private Question createQuestion(Long id, QuestionType type, Part part) {
+        return Question.builder()
+                .id(id)
+                .text("q" + id)
+                .questionType(type)
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
                 .part(part)
                 .build();
     }

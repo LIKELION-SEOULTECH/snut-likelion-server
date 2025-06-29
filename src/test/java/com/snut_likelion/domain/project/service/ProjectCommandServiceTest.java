@@ -8,6 +8,10 @@ import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.entity.ProjectRetrospection;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;
+<<<<<<< HEAD
+=======
+import com.snut_likelion.global.provider.FileProvider;
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 import com.snut_likelion.domain.project.infra.ProjectRepository;
 import com.snut_likelion.domain.project.infra.ProjectRetrospectionRepository;
 import com.snut_likelion.domain.user.entity.LionInfo;

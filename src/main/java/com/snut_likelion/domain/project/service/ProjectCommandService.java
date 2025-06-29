@@ -147,11 +147,15 @@ public class ProjectCommandService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
 
-        ArrayList<String> newList = new ArrayList<>(project.getImageUrlList());
-        newList.remove(imageUrl);
-        project.setImages(newList);
+        List<String> oldList = project.getImageUrlList();
 
-        String storedName = fileProvider.extractImageName(imageUrl);
-        fileProvider.deleteFile(storedName);
+        if (oldList.contains(imageUrl)) {
+            ArrayList<String> newList = new ArrayList<>(oldList);
+            newList.remove(imageUrl);
+            project.setImages(newList);
+
+            String storedName = fileProvider.extractImageName(imageUrl);
+            fileProvider.deleteFile(storedName);
+        }
     }
 }

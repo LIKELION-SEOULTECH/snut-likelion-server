@@ -99,7 +99,11 @@ public class GmailSender implements MailSender {
     }
 
     @Override
+<<<<<<< HEAD
     public void sendRecruitmentStartNotification(String toEmail, String username, int generation, String recruitmentType, LocalDateTime openDate, LocalDateTime closeDate) {
+=======
+    public void sendRecruitmentStartNotification(String toEmail, int generation, String recruitmentType, LocalDateTime openDate, LocalDateTime closeDate) {
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String subject = String.format(
                 "[서울과학기술대학교 멋쟁이사자처럼] %s %d기 모집이 시작되었습니다!",
@@ -107,12 +111,19 @@ public class GmailSender implements MailSender {
                 generation
         );
         String recStartMsg = String.format(
+<<<<<<< HEAD
                 "안녕하세요 %s님,\n\n" +
+=======
+                "안녕하세요, 서울과학기술대학교 멋쟁이사자처럼 대학입니다.\n\n" +
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
                         "드디어 서울과학기술대학교 멋쟁이사자처럼 %s %d기의 모집이 시작되었습니다!\n" +
                         "📅 모집 기간: %s ~ %s 입니다!\n\n" +
                         "지금 바로 지원하세요! → %s/recruitments/%d\n\n" +
                         "많은 참여 부탁드립니다 :)\n",
+<<<<<<< HEAD
                 username,
+=======
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
                 recruitmentType,
                 generation,
                 openDate.format(formatter),
@@ -122,7 +133,11 @@ public class GmailSender implements MailSender {
         );
 
         mailSender.send(this.generationMessage(toEmail, subject, recStartMsg));
+<<<<<<< HEAD
         log.info("모집 안내 메일 발송 성공: {}, {}, {}, {}", toEmail, username, recruitmentType, generation);
+=======
+        log.info("모집 안내 메일 발송 성공: {}, {}, {}", toEmail, recruitmentType, generation);
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     }
 
     private SimpleMailMessage generationMessage(String toEmail, String subject, String text) {

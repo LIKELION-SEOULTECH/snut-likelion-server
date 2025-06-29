@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+<<<<<<< HEAD
+=======
+import java.net.URLConnection;
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -28,13 +32,18 @@ public class FileController {
 
     // 파일 다운로드
     @GetMapping(value = "/download")
+<<<<<<< HEAD
     @PreAuthorize("hasRole('ROLE_MANAGER')")
+=======
+//    @PreAuthorize("hasRole('ROLE_MANAGER')")
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     public ResponseEntity<Resource> downloadFile(
             @RequestParam("fileName") String fileName,
             HttpServletRequest request
     ) throws IOException {
         Resource file = fileProvider.getFile(fileName);
 
+<<<<<<< HEAD
         String contentType = null;
         try {
             contentType = request.getServletContext()
@@ -43,6 +52,10 @@ public class FileController {
             // 타입 결정 실패 시 로그만 남기고 넘어감
             log.info("파일 타입을 결정할 수 없습니다: {}", fileName);
         }
+=======
+        String contentType = URLConnection
+                .guessContentTypeFromName(fileName);
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 
         if (contentType == null) {
             contentType = "application/octet-stream";

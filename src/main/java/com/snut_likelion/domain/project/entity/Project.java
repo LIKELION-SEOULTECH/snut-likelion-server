@@ -44,8 +44,14 @@ public class Project extends BaseEntity {
     private List<ProjectRetrospection> retrospections = new ArrayList<>();
 
     private String tags;
+<<<<<<< HEAD
 
     @Column(nullable = false, columnDefinition = "TEXT")
+=======
+    
+    @Lob
+    @Column(name = "images", columnDefinition = "TEXT")
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     private String images;
 
     @Builder

@@ -27,6 +27,22 @@ public class ApplicationController {
     private final ApplicationCommandService applicationCommandService;
     private final ApplicationQueryService applicationQueryService;
 
+<<<<<<< HEAD
+=======
+    @GetMapping("/recruitments/{recId}/applications")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ApiResponse<List<ApplicationResponse>> getApplicationsByRecruitmentId(
+            @PathVariable("recId") Long recId,
+            @RequestParam("page") int page,
+            @RequestParam(value = "part", required = false) Part part
+    ) {
+        return ApiResponse.success(
+                applicationQueryService.getApplicationsByRecruitmentId(recId, part, page),
+                "지원서 조회 성공"
+        );
+    }
+
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     @GetMapping("/applications/me")
     public ApiResponse<ApplicationDetailsResponse> getMyApplication(
             @AuthenticationPrincipal SnutLikeLionUser loginUser
@@ -37,6 +53,19 @@ public class ApplicationController {
         );
     }
 
+<<<<<<< HEAD
+=======
+    @GetMapping("/applications/{appId}")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ApiResponse<ApplicationDetailsResponse> getApplicationDetails(
+            @PathVariable("appId") Long appId
+    ) {
+        return ApiResponse.success(
+                applicationQueryService.getApplicationDetails(appId),
+                "지원서 상세 조회 성공"
+        );
+    }
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 
     // 임시 저장
     @PostMapping("/recruitments/{recId}/applications")
@@ -71,4 +100,17 @@ public class ApplicationController {
         applicationCommandService.deleteApplication(appId, loginUser.getUserInfo());
     }
 
+<<<<<<< HEAD
+=======
+    @PatchMapping("/applications/{appId}/process")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public void updateApplicationStatus(
+            @PathVariable("appId") Long appId,
+            @RequestParam("status") ApplicationStatus status
+    ) {
+        applicationCommandService.updateApplicationStatus(appId, status);
+    }
+
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 }

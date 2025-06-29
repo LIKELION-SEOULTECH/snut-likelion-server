@@ -12,6 +12,10 @@ import com.snut_likelion.domain.recruitment.infra.QuestionFilter;
 import com.snut_likelion.domain.recruitment.infra.QuestionRepository;
 import com.snut_likelion.domain.recruitment.infra.RecruitmentRepository;
 import com.snut_likelion.domain.user.entity.Part;
+<<<<<<< HEAD
+=======
+import com.snut_likelion.domain.user.entity.Role;
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;
@@ -34,11 +38,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ApplicationCommandService {
 
+<<<<<<< HEAD
+=======
+    @Value("${snut.likelion.current-generation}")
+    private int currentGeneration;
+
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     private final ApplicationRepository applicationRepository;
     private final FileProvider fileProvider;
     private final RecruitmentRepository recruitmentRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+<<<<<<< HEAD
+=======
+    private final NotificationService notificationService;
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
     private final QuestionFilter questionFilter;
 
     @Transactional
@@ -112,10 +126,13 @@ public class ApplicationCommandService {
         Application application = applicationRepository.findById(appId)
                 .orElseThrow(() -> new NotFoundException(ApplicationErrorCode.NOT_FOUND_APPLICATION));
 
+<<<<<<< HEAD
         if (application.getStatus() == ApplicationStatus.SUBMITTED) {
             throw new BadRequestException(ApplicationErrorCode.ALREADY_SUBMITTED);
         }
 
+=======
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
         // 답변 업데이트
         application.getAnswers().clear(); // 기존 답변 제거
         this.mappingAnswers(req.getAnswers(), application);
@@ -166,4 +183,33 @@ public class ApplicationCommandService {
         fileProvider.deleteFile(storedName);
     }
 
+<<<<<<< HEAD
+=======
+    @Transactional
+    public void updateApplicationStatus(Long appId, ApplicationStatus newStatus) {
+        Application application = applicationRepository.findByIdWithUser(appId)
+                .orElseThrow(() -> new NotFoundException(ApplicationErrorCode.NOT_FOUND_APPLICATION));
+
+        if (application.getStatus() == ApplicationStatus.DRAFT) {
+            throw new BadRequestException(ApplicationErrorCode.DRAFT_APPLICATION_CANNOT_UPDATE_STATUS);
+        }
+
+        if (List.of(ApplicationStatus.DRAFT, ApplicationStatus.SUBMITTED).contains(newStatus)) {
+            throw new BadRequestException(ApplicationErrorCode.INVALID_STATUS_CHANGE);
+        }
+
+        // 상태 변경
+        application.setStatus(newStatus);
+
+        // 메일 발송
+        User user = application.getUser();
+        if (newStatus == ApplicationStatus.ACCEPTED) {
+            user.updateMajorFromApplication(application);
+            Role role = application.getDepartmentType() == null ? Role.ROLE_USER : Role.ROLE_MANAGER;
+            user.generateCurrentLionInfo(currentGeneration, application.getPart(), role);
+        }
+
+        notificationService.sendNotification(user, newStatus, application);
+    }
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 }

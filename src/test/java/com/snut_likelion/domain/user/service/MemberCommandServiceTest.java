@@ -1,5 +1,10 @@
 package com.snut_likelion.domain.user.service;
 
+<<<<<<< HEAD
+=======
+import com.snut_likelion.global.provider.FileProvider;
+import com.snut_likelion.domain.user.dto.request.UpdateLionInfoRequest;
+>>>>>>> 6de69ba85508f0cbec27e57958f0783643f34360
 import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
