@@ -44,17 +44,14 @@ public class LionInfo extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DepartmentType departmentType;
 
-    private String stacks;
-
     @OneToMany(mappedBy = "lionInfo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectParticipation> participations = new ArrayList<>();
 
     @Builder
-    public LionInfo(Role role, Part part, int generation, String stacks, DepartmentType departmentType) {
+    public LionInfo(Role role, Part part, int generation, DepartmentType departmentType) {
         this.role = role;
         this.part = part;
         this.generation = generation;
-        this.stacks = stacks;
         this.departmentType = departmentType;
     }
 
@@ -66,40 +63,18 @@ public class LionInfo extends BaseEntity {
                 .build();
     }
 
-    public List<String> getStackList() {
-        if (stacks == null || stacks.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return List.of(stacks.split(", "));
-    }
-
-    public void update(List<String> stacks, Part part, Role role) {
-        if (stacks != null && !stacks.isEmpty()) {
-            this.stacks = String.join(", ", stacks);
-        }
-
-        if (part != null) {
-            this.part = part;
-        }
-
-        if (role != null) {
-            this.role = role;
-        }
+    public void updateByAdmin(Part part, Role role, DepartmentType departmentType) {
+        this.part = part;
+        this.role = role;
+        this.departmentType = departmentType;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
 
-
     public void addProjectParticipation(ProjectParticipation participation) {
         this.participations.add(participation);
         participation.setLionInfo(this);
-    }
-
-    public void updateByAdmin(Part part, Role role, DepartmentType departmentType) {
-        this.part = part;
-        this.role = role;
-        this.departmentType = departmentType;
     }
 }

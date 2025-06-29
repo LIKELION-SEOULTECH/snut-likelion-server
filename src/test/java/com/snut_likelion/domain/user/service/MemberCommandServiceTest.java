@@ -69,6 +69,8 @@ public class MemberCommandServiceTest {
                 .intro("새로운 소개")
                 .description("새로운 설명")
                 .major("컴퓨터공학")
+                .saying("명언")
+                .stacks(List.of("JAVA", "SPRING"))
                 .portfolioLinks(List.of(pl1, pl2))
                 .build();
 
@@ -91,7 +93,7 @@ public class MemberCommandServiceTest {
                 () -> verify(portfolioLinkRepository).saveAll(anyList()),
                 () -> verify(user).setPortfolioLinkList(anyList()),
                 () -> verify(portfolioLinkRepository).saveAll(anyList()),
-                () -> verify(user).updateProfile("새로운 소개", "새로운 설명", "컴퓨터공학")
+                () -> verify(user).updateProfile("새로운 소개", "새로운 설명", "컴퓨터공학", "명언", List.of("JAVA", "SPRING"))
         );
     }
 
@@ -106,6 +108,8 @@ public class MemberCommandServiceTest {
                 .intro("새로운 소개")
                 .description("새로운 설명")
                 .major("컴퓨터공학")
+                .saying("명언")
+                .stacks(List.of("JAVA", "SPRING"))
                 .build();
 
 
@@ -116,7 +120,9 @@ public class MemberCommandServiceTest {
                 () -> verify(portfolioLinkRepository, never()).saveAll(any()),
                 () -> assertThat(user.getIntro()).isEqualTo("새로운 소개"),
                 () -> assertThat(user.getDescription()).isEqualTo("새로운 설명"),
-                () -> assertThat(user.getMajor()).isEqualTo("컴퓨터공학")
+                () -> assertThat(user.getMajor()).isEqualTo("컴퓨터공학"),
+                () -> assertThat(user.getSaying()).isEqualTo("명언"),
+                () -> assertThat(user.getStacks()).isEqualTo("JAVA, SPRING")
         );
     }
 

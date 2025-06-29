@@ -46,6 +46,8 @@ public class User extends BaseEntity {
     @Lob
     private String profileImageUrl;
 
+    private String stacks;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LionInfo> lionInfos = new ArrayList<>();
 
@@ -56,7 +58,7 @@ public class User extends BaseEntity {
     private Application application;
 
     @Builder
-    public User(Long id, String email, String username, String password, String phoneNumber, String intro, String description, String saying, String major, String profileImageUrl) {
+    public User(Long id, String email, String username, String password, String phoneNumber, String intro, String description, String saying, String major, String profileImageUrl, String stacks) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -67,6 +69,14 @@ public class User extends BaseEntity {
         this.saying = saying;
         this.major = major;
         this.profileImageUrl = profileImageUrl;
+        this.stacks = stacks;
+    }
+
+    public List<String> getStackList() {
+        if (stacks == null || stacks.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return List.of(stacks.split(", "));
     }
 
     public void updatePassword(String newPassword) {
@@ -85,11 +95,14 @@ public class User extends BaseEntity {
         });
     }
 
-    public void updateProfile(String intro, String description, String major) {
+    public void updateProfile(String intro, String description, String major, String saying, List<String> stacks) {
         if (StringUtils.hasText(intro)) this.intro = intro;
         if (StringUtils.hasText(description)) this.description = description;
         if (StringUtils.hasText(major)) this.major = major;
-        if (StringUtils.hasText(this.saying)) this.saying = this.saying;
+        if (StringUtils.hasText(saying)) this.saying = saying;
+        if (stacks != null && !stacks.isEmpty()) {
+            this.stacks = String.join(", ", stacks);
+        }
     }
 
     public void addLionInfo(LionInfo lionInfo) {

@@ -46,7 +46,7 @@ public class MemberCommandService {
             this.connectPortfolioLinks(req.getPortfolioLinks(), user);
         }
 
-        user.updateProfile(req.getIntro(), req.getDescription(), req.getMajor());
+        user.updateProfile(req.getIntro(), req.getDescription(), req.getMajor(), req.getSaying(), req.getStacks());
     }
 
     private void connectPortfolioLinks(List<UpdateProfileRequest.PortfolioLinkDto> portfolioLinkDtos, User user) {

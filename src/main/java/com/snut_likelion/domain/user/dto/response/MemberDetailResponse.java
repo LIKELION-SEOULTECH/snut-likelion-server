@@ -21,9 +21,10 @@ public class MemberDetailResponse {
     private List<PortfolioLinkDto> portfolioLinks;
     private String email;
     private List<Integer> generations;
+    private List<String> stacks;
 
     @Builder
-    public MemberDetailResponse(Long id, String name, String profileImageUrl, String intro, String description, List<PortfolioLink> portfolioLinks, String email, List<Integer> generations) {
+    public MemberDetailResponse(Long id, String name, String profileImageUrl, String intro, String description, List<PortfolioLink> portfolioLinks, String email, List<String> stacks, List<Integer> generations) {
         this.id = id;
         this.name = name;
         this.profileImageUrl = profileImageUrl;
@@ -31,6 +32,7 @@ public class MemberDetailResponse {
         this.description = description;
         this.portfolioLinks = portfolioLinks.stream().map(PortfolioLinkDto::from).toList();
         this.email = email;
+        this.stacks = stacks;
         this.generations = generations;
     }
 
@@ -43,6 +45,7 @@ public class MemberDetailResponse {
                 .intro(member.getIntro())
                 .description(member.getDescription())
                 .portfolioLinks(member.getPortfolioLinks())
+                .stacks(member.getStackList())
                 .generations(generations)
                 .build();
     }
