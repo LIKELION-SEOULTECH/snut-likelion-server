@@ -30,6 +30,7 @@ public enum PermitAllUrls {
     GET_MEMBER_LION_INFO("/api/v1/members/{memberId}/lion-info", GET),
     GET_CURRENT_RECRUITMENT("/api/v1/recruitments", GET),
     GET_RECRUITMENT_QUESTIONS("/api/v1/recruitments/{recId}/questions", GET),
+    SUBSCRIBE("/api/v1/subscriptions*", POST),
     ;
 
     private final String url;

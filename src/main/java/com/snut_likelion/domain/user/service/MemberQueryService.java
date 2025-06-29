@@ -58,9 +58,13 @@ public class MemberQueryService {
 
     @Transactional(readOnly = true)
     public MemberDetailResponse getMemberDetailsById(Long memberId) {
+        List<Integer> generations = lionInfoRepository.findGenerationsByUser_Id(memberId);
+        if (generations.isEmpty()) {
+            throw new NotFoundException(UserErrorCode.NOT_FOUND_LION_INFO);
+        }
+
         User user = userRepository.findUserDetailsByUserId(memberId)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
-        List<Integer> generations = lionInfoRepository.findGenerationsByUser_Id(memberId);
         return MemberDetailResponse.of(user, generations);
     }
 

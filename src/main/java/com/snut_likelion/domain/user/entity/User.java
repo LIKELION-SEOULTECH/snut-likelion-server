@@ -121,6 +121,10 @@ public class User extends BaseEntity {
         this.addLionInfo(lionInfo);
     }
 
+    public void updateMajorFromApplication(Application application) {
+        this.major = application.getMajor();
+    }
+
     public void updateUsername(String username) {
         this.username = username;
     }

@@ -41,14 +41,12 @@ public class NotificationService {
     }
 
     @Async
-    public void sendRecruitmentStartNotice(User user, Recruitment rec) {
-        String email = user.getEmail();
-        String name = user.getUsername();
+    public void sendRecruitmentStartNotice(String email, Recruitment rec) {
         int generation = rec.getGeneration();
         RecruitmentType recruitmentType = rec.getRecruitmentType();
         LocalDateTime openDate = rec.getOpenDate();
         LocalDateTime closeDate = rec.getCloseDate();
 
-        mailSender.sendRecruitmentStartNotification(email, name, generation, recruitmentType.getDescription(), openDate, closeDate);
+        mailSender.sendRecruitmentStartNotification(email, generation, recruitmentType.getDescription(), openDate, closeDate);
     }
 }
