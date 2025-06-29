@@ -3,17 +3,13 @@ package com.snut_likelion.domain.recruitment.controller;
 import com.snut_likelion.domain.recruitment.dto.request.CreateApplicationRequest;
 import com.snut_likelion.domain.recruitment.dto.request.UpdateApplicationRequest;
 import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsResponse;
-import com.snut_likelion.domain.recruitment.dto.response.ApplicationResponse;
-import com.snut_likelion.domain.recruitment.entity.ApplicationStatus;
 import com.snut_likelion.domain.recruitment.service.ApplicationCommandService;
 import com.snut_likelion.domain.recruitment.service.ApplicationQueryService;
-import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.global.auth.model.SnutLikeLionUser;
 import com.snut_likelion.global.dto.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +24,7 @@ public class ApplicationController {
     private final ApplicationQueryService applicationQueryService;
 
     @GetMapping("/applications/me")
-    public ApiResponse<ApplicationDetailsResponse> getMyApplication(
+    public ApiResponse<List<ApplicationDetailsResponse>> getMyApplication(
             @AuthenticationPrincipal SnutLikeLionUser loginUser
     ) {
         return ApiResponse.success(

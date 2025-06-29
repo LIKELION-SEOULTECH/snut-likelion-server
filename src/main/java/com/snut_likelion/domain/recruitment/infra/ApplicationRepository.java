@@ -19,7 +19,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
                     "WHERE a.user.id = :userId " +
                     "AND a.recruitment.generation = :currentGeneration"
     )
-    Optional<Application> findMyApplication(
+    List<Application> findMyApplication(
             @Param("userId") Long userId,
             @Param("currentGeneration") int currentGeneration
     );
