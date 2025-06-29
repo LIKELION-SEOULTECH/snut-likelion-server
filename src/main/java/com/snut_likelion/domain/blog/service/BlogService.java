@@ -4,7 +4,7 @@ import com.snut_likelion.domain.blog.dto.*;
 import com.snut_likelion.domain.blog.entity.*;
 import com.snut_likelion.domain.blog.exception.BlogErrorCode;
 import com.snut_likelion.domain.blog.repository.BlogPostRepository;
-import com.snut_likelion.domain.project.infra.FileProvider;
+import com.snut_likelion.global.provider.FileProvider;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;

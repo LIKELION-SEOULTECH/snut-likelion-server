@@ -27,7 +27,10 @@ public enum PermitAllUrls {
     GET_MEMBERS("/api/v1/members", GET),
     SEARCH_MEMBERS("/api/v1/members/search*", GET),
     GET_MEMBER_DETAILS("/api/v1/members/{memberId}", GET),
-    GET_MEMBER_LION_INFO("/api/v1/members/{memberId}/lion-info", GET);
+    GET_MEMBER_LION_INFO("/api/v1/members/{memberId}/lion-info", GET),
+    GET_CURRENT_RECRUITMENT("/api/v1/recruitments", GET),
+    GET_RECRUITMENT_QUESTIONS("/api/v1/recruitments/{recId}/questions", GET),
+    ;
 
     private final String url;
     private final HttpMethod method;

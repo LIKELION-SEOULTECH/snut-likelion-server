@@ -13,7 +13,9 @@ public enum GlobalErrorCode implements BaseError {
     INVALID_TOKEN("INVALID_TOKEN", "유효하지 않은 토큰입니다."),
     FORBIDDEN("FORBIDDEN", "권한이 없습니다."),
     NOT_FOUND("NOT_FOUND", "자원을 찾을 수 없습니다."),
-    INTERNAL_SERVER_ERROR("SERVER_ERROR", "서버 오류입니다. 잠시 후 다시 시도해주세요.");
+    INTERNAL_SERVER_ERROR("SERVER_ERROR", "서버 오류입니다. 잠시 후 다시 시도해주세요."),
+    MISSING_PARAMETER("MISSING_PARAMETER", "필수 파라미터가 누락되었습니다."),
+    DATA_INTEGRITY_VIOLATION("DATA_INTEGRITY_VIOLATION", "데이터 무결성 제약 위반");
 
     private final String code;
     private final String message;

@@ -15,9 +15,6 @@ public class RoleConverter {
             case ROLE_USER -> {
                 return "아기사자";
             }
-            case ROLE_PREVIOUS -> {
-                return "이전 기수";
-            }
             default -> throw new IllegalArgumentException("일치하는 역할이 없습니다: " + role);
         }
     }

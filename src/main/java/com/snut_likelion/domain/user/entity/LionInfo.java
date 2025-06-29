@@ -1,6 +1,7 @@
 package com.snut_likelion.domain.user.entity;
 
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
+import com.snut_likelion.domain.recruitment.entity.DepartmentType;
 import com.snut_likelion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -30,12 +31,18 @@ public class LionInfo extends BaseEntity {
     private User user;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Part part; // 파트
 
+    @Column(nullable = false)
     private int generation;
+
+    @Enumerated(EnumType.STRING)
+    private DepartmentType departmentType;
 
     private String stacks;
 
@@ -43,11 +50,12 @@ public class LionInfo extends BaseEntity {
     private List<ProjectParticipation> participations = new ArrayList<>();
 
     @Builder
-    public LionInfo(Role role, Part part, int generation, String stacks) {
+    public LionInfo(Role role, Part part, int generation, String stacks, DepartmentType departmentType) {
         this.role = role;
         this.part = part;
         this.generation = generation;
         this.stacks = stacks;
+        this.departmentType = departmentType;
     }
 
     public static LionInfo of(int generation, Part part, Role role) {
@@ -87,5 +95,11 @@ public class LionInfo extends BaseEntity {
     public void addProjectParticipation(ProjectParticipation participation) {
         this.participations.add(participation);
         participation.setLionInfo(this);
+    }
+
+    public void updateByAdmin(Part part, Role role, DepartmentType departmentType) {
+        this.part = part;
+        this.role = role;
+        this.departmentType = departmentType;
     }
 }

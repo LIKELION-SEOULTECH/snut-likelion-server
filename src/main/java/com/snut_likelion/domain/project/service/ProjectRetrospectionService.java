@@ -1,13 +1,16 @@
 package com.snut_likelion.domain.project.service;
 
 import com.snut_likelion.domain.project.dto.response.RetrospectionResponse;
+import com.snut_likelion.domain.project.entity.Project;
+import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.entity.ProjectRetrospection;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;
+import com.snut_likelion.domain.project.infra.ProjectParticipationRepository;
 import com.snut_likelion.domain.project.infra.ProjectRetrospectionRepository;
-import com.snut_likelion.global.auth.model.UserInfo;
+import com.snut_likelion.domain.user.entity.LionInfo;
+import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,7 @@ import java.util.List;
 public class ProjectRetrospectionService {
 
     private final ProjectRetrospectionRepository projectRetrospectionRepository;
+    private final ProjectParticipationRepository projectParticipationRepository;
 
     @Transactional(readOnly = true)
     public List<RetrospectionResponse> getAllByProjectId(Long projectId) {
@@ -27,10 +31,22 @@ public class ProjectRetrospectionService {
     }
 
     @Transactional
-    @PreAuthorize("@authChecker.isMyProject(#loginUser, #retrospectionId)")
-    public void remove(UserInfo loginUser, Long retrospectionId) {
+    public void remove(Long projectId, Long retrospectionId) {
         ProjectRetrospection projectRetrospection = projectRetrospectionRepository.findById(retrospectionId)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_RETROSPECTION));
-        projectRetrospectionRepository.delete(projectRetrospection);
+
+        User writer = projectRetrospection.getWriter();
+        Project project = projectRetrospection.getProject();
+
+        LionInfo lionInfo = writer.getLionInfos().stream()
+                .filter(li -> li.getGeneration() == project.getGeneration())
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_LION_INFO));
+
+        ProjectParticipation projectParticipation = projectParticipationRepository.findByLionInfo_IdAndProject_Id(lionInfo.getId(), projectId)
+                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PARTICIPANT));
+
+        project.getParticipations().remove(projectParticipation);
+        project.getRetrospections().remove(projectRetrospection);
     }
 }
