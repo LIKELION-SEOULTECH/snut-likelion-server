@@ -16,14 +16,14 @@ public class BlogSummaryResponse {
     private Long postId;
     private String title;
     private LocalDateTime updatedAt;
-    private String thumbnailUr;
+    private String thumbnailUrl;
 
     @Builder
-    public BlogSummaryResponse(Long postId, String title, LocalDateTime updatedAt, String thumbnailUr) {
+    public BlogSummaryResponse(Long postId, String title, LocalDateTime updatedAt, String thumbnailUrl) {
         this.postId = postId;
         this.title = title;
         this.updatedAt = updatedAt;
-        this.thumbnailUr = thumbnailUr;
+        this.thumbnailUrl = this.thumbnailUrl;
     }
 
     public static BlogSummaryResponse from(BlogPost blogPost) {
@@ -31,7 +31,7 @@ public class BlogSummaryResponse {
                 .postId(blogPost.getId())
                 .title(blogPost.getTitle())
                 .updatedAt(blogPost.getUpdatedAt())
-                .thumbnailUr(blogPost.getThumbnailUrl())
+                .thumbnailUrl(blogPost.getThumbnailUrl())
                 .build();
     }
 }
