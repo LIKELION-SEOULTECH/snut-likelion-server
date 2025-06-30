@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -62,23 +63,12 @@ public class BlogPost extends BaseEntity {
     private BlogPost(String title,
                      String content,
                      Category category,
-                     User author,
-                     List<BlogImage> images,
                      Set<User> taggedMembers,
                      PostStatus status) {
 
         this.title = title;
         this.content = content;
         this.category = category;
-        this.author = author;
-
-        if (images != null && !images.isEmpty()) {
-            for (BlogImage img : images) {
-                img.setPost(this);
-            }
-            this.images.addAll(images);
-            this.thumbnailUrl = images.get(0).getUrl();
-        }
 
         if (taggedMembers != null) {
             this.taggedMembers.addAll(taggedMembers);
@@ -89,22 +79,41 @@ public class BlogPost extends BaseEntity {
         }
     }
 
-    public void changeStatus(PostStatus status) { this.status = status; }  //  글 상태 변경 (임시저장 <-> 게시)
+    public void changeStatus(PostStatus status) {
+        this.status = status;
+    }  //  글 상태 변경 (임시저장 <-> 게시)
 
     public void changeThumbnail(String url) {
         this.thumbnailUrl = url;
     }
 
-    public void addTag(User user) { this.taggedMembers.add(user); }
-    public void removeTag(User user) { this.taggedMembers.remove(user); }
-    public void replaceTags(Set<User> newTags) {  // 태그 일괄 교체
-        this.taggedMembers.clear();
-        this.taggedMembers.addAll(newTags);
+    public void addTag(User user) {
+        this.taggedMembers.add(user);
+    }
+
+    public void removeTag(User user) {
+        this.taggedMembers.remove(user);
     }
 
     public void updatePost(String title, String content, Category category) {
-        this.title = title;
-        this.content = content;
-        this.category = category;
+        if (StringUtils.hasText(title)) this.title = title;
+        if (StringUtils.hasText(content)) this.content = content;
+        if (category != null) this.category = category;
+    }
+
+    // === 연관관계 메서드 ===
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public void setImages(List<BlogImage> images) {
+        this.getImages().clear();
+        this.getImages().addAll(images);
+        this.thumbnailUrl = images.get(0).getUrl();
+    }
+
+    public void setTaggedMembers(Set<User> taggedMembers) {
+        this.taggedMembers.clear();
+        this.taggedMembers.addAll(taggedMembers);
     }
 }

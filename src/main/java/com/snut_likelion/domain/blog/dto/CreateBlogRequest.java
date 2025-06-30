@@ -3,7 +3,6 @@ package com.snut_likelion.domain.blog.dto;
 import com.snut_likelion.domain.blog.entity.BlogPost;
 import com.snut_likelion.domain.blog.entity.Category;
 import com.snut_likelion.domain.blog.entity.PostStatus;
-import com.snut_likelion.domain.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -32,19 +31,35 @@ public class CreateBlogRequest {
     // 임시저장 / 게시 (기본 = PUBLISHED)
     private PostStatus status = PostStatus.PUBLISHED;
 
-    public void setTitle(String title)                { this.title = title; }
-    public void setContentHtml(String contentHtml)    { this.contentHtml = contentHtml; }
-    public void setCategory(Category category)        { this.category = category; }
-    public void setImages(List<MultipartFile> images) { this.images = images; }
-    public void setTaggedMemberIds(List<Long> ids)    { this.taggedMemberIds = ids; }
-    public void setStatus(PostStatus status)          { this.status = status; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public BlogPost toEntity(User author) {
+    public void setContentHtml(String contentHtml) {
+        this.contentHtml = contentHtml;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public void setImages(List<MultipartFile> images) {
+        this.images = images;
+    }
+
+    public void setTaggedMemberIds(List<Long> ids) {
+        this.taggedMemberIds = ids;
+    }
+
+    public void setStatus(PostStatus status) {
+        this.status = status;
+    }
+
+    public BlogPost toEntity() {
         return BlogPost.builder()
                 .title(title)
                 .content(contentHtml)
                 .category(category)
-                .author(author)
                 .status(status)
                 .build();
     }

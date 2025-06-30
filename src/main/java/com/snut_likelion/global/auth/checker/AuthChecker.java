@@ -13,7 +13,6 @@ import com.snut_likelion.domain.recruitment.exception.ApplicationErrorCode;
 import com.snut_likelion.domain.recruitment.infra.ApplicationRepository;
 import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.repository.LionInfoRepository;
-import com.snut_likelion.global.auth.model.SnutLikeLionUser;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -66,15 +65,7 @@ public class AuthChecker {
     }
 
     public boolean checkIsOfficialAndManager(Category category, UserInfo user) {
-        if (category == Category.OFFICIAL && !this.hasManagerAuthority(user)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean checkIsOfficialAndManager(Category category, SnutLikeLionUser principal) {
-        return checkIsOfficialAndManager(category, principal.getUserInfo());
+        return category != Category.OFFICIAL || this.hasManagerAuthority(user);
     }
 
     // 수정 & 삭제 권한 검사 (OFFICIAL 게시글은 관리자만 / UNOFFICIAL 게시글은 작성자 또는 관리자)
@@ -90,10 +81,6 @@ public class AuthChecker {
         boolean isAuthor = post.getAuthor().getId().equals(user.getId());
 
         return isAuthor || isManager;
-    }
-
-    public boolean checkCanModify(Long postId, SnutLikeLionUser principal) {
-        return checkCanModify(postId, principal.getUserInfo());
     }
 
     public boolean isMyApplication(UserInfo userInfo, Long appId) {

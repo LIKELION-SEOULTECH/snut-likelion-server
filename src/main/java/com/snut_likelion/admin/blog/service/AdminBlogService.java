@@ -4,7 +4,7 @@ import com.snut_likelion.admin.blog.dto.response.BlogPageResponse;
 import com.snut_likelion.admin.blog.infra.AdminBlogQueryRepository;
 import com.snut_likelion.domain.blog.dto.CreateBlogRequest;
 import com.snut_likelion.domain.blog.dto.UpdateBlogRequest;
-import com.snut_likelion.domain.blog.service.BlogService;
+import com.snut_likelion.domain.blog.service.BlogCommandService;
 import com.snut_likelion.global.auth.model.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,7 @@ public class AdminBlogService {
     private static final int PAGE_SIZE = 8;
 
     private final AdminBlogQueryRepository queryRepository;
-    private final BlogService              blogService;
+    private final BlogCommandService blogCommandService;
 
     @Transactional(readOnly = true)
     public BlogPageResponse getBlogList(String category, int page, String keyword) {
@@ -33,17 +33,17 @@ public class AdminBlogService {
 
     @Transactional
     public void create(CreateBlogRequest req, UserInfo info) {
-        blogService.createPost(req, info);
+        blogCommandService.createPost(req, info);
     }
 
     @Transactional
     public void modify(Long id, UpdateBlogRequest req, UserInfo info) {
-        blogService.updatePost(id, req, info);
+        blogCommandService.updatePost(id, req, info);
     }
 
     @Transactional
     public void delete(Long id, UserInfo info) {
-        blogService.deletePost(id, info);
+        blogCommandService.deletePost(id, info);
     }
 
     @Transactional
