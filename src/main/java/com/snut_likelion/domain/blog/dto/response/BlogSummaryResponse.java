@@ -1,4 +1,4 @@
-package com.snut_likelion.domain.blog.dto;
+package com.snut_likelion.domain.blog.dto.response;
 
 import com.snut_likelion.domain.blog.entity.BlogPost;
 import lombok.AccessLevel;

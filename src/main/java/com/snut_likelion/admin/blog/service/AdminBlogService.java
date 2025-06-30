@@ -2,8 +2,8 @@ package com.snut_likelion.admin.blog.service;
 
 import com.snut_likelion.admin.blog.dto.response.BlogPageResponse;
 import com.snut_likelion.admin.blog.infra.AdminBlogQueryRepository;
-import com.snut_likelion.domain.blog.dto.CreateBlogRequest;
-import com.snut_likelion.domain.blog.dto.UpdateBlogRequest;
+import com.snut_likelion.domain.blog.dto.request.CreateBlogRequest;
+import com.snut_likelion.domain.blog.dto.request.UpdateBlogRequest;
 import com.snut_likelion.domain.blog.service.BlogCommandService;
 import com.snut_likelion.global.auth.model.UserInfo;
 import lombok.RequiredArgsConstructor;

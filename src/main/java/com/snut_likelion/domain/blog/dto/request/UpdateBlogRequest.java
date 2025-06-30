@@ -1,4 +1,4 @@
-package com.snut_likelion.domain.blog.dto;
+package com.snut_likelion.domain.blog.dto.request;
 
 import com.snut_likelion.domain.blog.entity.Category;
 import com.snut_likelion.domain.blog.entity.PostStatus;

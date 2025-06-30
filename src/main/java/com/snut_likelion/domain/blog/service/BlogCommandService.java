@@ -1,7 +1,7 @@
 package com.snut_likelion.domain.blog.service;
 
-import com.snut_likelion.domain.blog.dto.CreateBlogRequest;
-import com.snut_likelion.domain.blog.dto.UpdateBlogRequest;
+import com.snut_likelion.domain.blog.dto.request.CreateBlogRequest;
+import com.snut_likelion.domain.blog.dto.request.UpdateBlogRequest;
 import com.snut_likelion.domain.blog.entity.BlogImage;
 import com.snut_likelion.domain.blog.entity.BlogPost;
 import com.snut_likelion.domain.blog.entity.PostStatus;
