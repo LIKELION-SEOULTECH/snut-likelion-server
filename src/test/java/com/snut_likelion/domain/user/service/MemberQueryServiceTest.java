@@ -160,6 +160,7 @@ public class MemberQueryServiceTest {
                 .intro("아기사자입니다.")
                 .description("설명입니다.")
                 .saying("멋진 명언")
+                .stacks("JAVA, SPRING")
                 .build();
         when(userRepository.findUserDetailsByUserId(memberId))
                 .thenReturn(Optional.of(user));
@@ -175,6 +176,8 @@ public class MemberQueryServiceTest {
                 () -> assertThat(detail.getProfileImageUrl()).isEqualTo("http://example.com/user.jpg"),
                 () -> assertThat(detail.getIntro()).isEqualTo("아기사자입니다."),
                 () -> assertThat(detail.getDescription()).isEqualTo("설명입니다."),
+                () -> assertThat(detail.getStacks()).hasSize(2)
+                        .containsExactly("JAVA", "SPRING"),
                 () -> assertThat(detail.getPortfolioLinks()).hasSize(0),
                 () -> assertThat(detail.getGenerations()).containsExactly(11, 12, 13)
         );
@@ -183,6 +186,8 @@ public class MemberQueryServiceTest {
     @Test
     void getMemberDetailsById_whenNotFound_throwsException() {
         Long memberId = 99L;
+        when(lionInfoRepository.findGenerationsByUser_Id(memberId))
+                .thenReturn(List.of(13));
         when(userRepository.findUserDetailsByUserId(memberId))
                 .thenReturn(Optional.empty());
 
@@ -200,7 +205,6 @@ public class MemberQueryServiceTest {
                 .generation(generation)
                 .role(Role.ROLE_USER)
                 .part(Part.BACKEND)
-                .stacks("Java, Spring")
                 .build();
         User user = User.builder()
                 .id(memberId)
@@ -210,6 +214,7 @@ public class MemberQueryServiceTest {
                 .intro("아기사자입니다.")
                 .description("설명입니다.")
                 .saying("멋진 명언")
+                .stacks("JAVA, SPRING")
                 .build();
         user.addLionInfo(userLionInfo);
 
@@ -245,8 +250,6 @@ public class MemberQueryServiceTest {
                 () -> assertThat(infoDetails.getGeneration()).isEqualTo(generation),
                 () -> assertThat(infoDetails.getRole()).isEqualTo("아기사자"),
                 () -> assertThat(infoDetails.getPart()).isEqualTo(Part.BACKEND.name()),
-                () -> assertThat(infoDetails.getStacks()).hasSize(2),
-                () -> assertThat(infoDetails.getStacks()).containsExactly("Java", "Spring"),
                 () -> assertThat(infoDetails.getProjects()).hasSize(2),
                 () -> assertThat(infoDetails.getProjects()).extracting("id", "name", "thumbnailUrl")
                         .containsExactly(

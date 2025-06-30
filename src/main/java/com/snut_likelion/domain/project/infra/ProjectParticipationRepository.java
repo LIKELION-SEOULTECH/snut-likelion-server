@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProjectParticipationRepository extends JpaRepository<ProjectParticipation, Long> {
     @EntityGraph(attributePaths = {"project", "project.images"})
@@ -15,4 +16,6 @@ public interface ProjectParticipationRepository extends JpaRepository<ProjectPar
     @Query("SELECT COUNT(pp) > 0 FROM ProjectParticipation pp " +
             "WHERE pp.project.id = :projectId AND pp.lionInfo.id IN :lionInfoIds")
     boolean existsByProject_IdAndLionInfo_Ids(Long projectId, List<Long> lionInfoIds);
+
+    Optional<ProjectParticipation> findByLionInfo_IdAndProject_Id(Long lionInfoId, Long projectId);
 }

@@ -2,7 +2,6 @@ package com.snut_likelion.domain.project.dto.request;
 
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -41,10 +40,8 @@ public class CreateProjectRequest {
 
     private List<MultipartFile> images;
 
-    private List<Long> memberIds;
-
     @Builder
-    public CreateProjectRequest(String name, String intro, String description, int generation, String websiteUrl, String playstoreUrl, String appstoreUrl, ProjectCategory category, List<String> tags, List<MultipartFile> images, List<Long> memberIds, List<RetrospectionDto> retrospections) {
+    public CreateProjectRequest(String name, String intro, String description, int generation, String websiteUrl, String playstoreUrl, String appstoreUrl, ProjectCategory category, List<String> tags, List<MultipartFile> images, List<RetrospectionDto> retrospections) {
         this.name = name;
         this.intro = intro;
         this.description = description;
@@ -55,21 +52,7 @@ public class CreateProjectRequest {
         this.category = category;
         this.tags = tags;
         this.images = images;
-        this.memberIds = memberIds;
         this.retrospections = retrospections;
-    }
-
-    @AssertTrue(message = "retrospections의 memberId들은 memberIds에 포함되어야 합니다.")
-    public boolean isRetrospectionsMemberIdsValid() {
-        if (retrospections == null || retrospections.isEmpty()) {
-            return true;
-        }
-
-        if (memberIds == null || memberIds.isEmpty()) {
-            return false;
-        }
-
-        return retrospections.stream().allMatch(retrospection -> memberIds.contains(retrospection.getMemberId()));
     }
 
     public Project toEntityWithValue() {

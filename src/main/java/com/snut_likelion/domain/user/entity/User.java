@@ -1,6 +1,8 @@
 package com.snut_likelion.domain.user.entity;
 
 
+import com.snut_likelion.domain.recruitment.entity.Application;
+import com.snut_likelion.domain.recruitment.entity.DepartmentType;
 import com.snut_likelion.global.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -23,6 +25,7 @@ public class User extends BaseEntity {
 
     private String username; // 실제 이름
 
+    @Column(nullable = false)
     private String password;
 
     @Column(unique = true)
@@ -43,14 +46,19 @@ public class User extends BaseEntity {
     @Lob
     private String profileImageUrl;
 
+    private String stacks;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LionInfo> lionInfos = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PortfolioLink> portfolioLinks = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Application application;
+
     @Builder
-    public User(Long id, String email, String username, String password, String phoneNumber, String intro, String description, String saying, String major, String profileImageUrl) {
+    public User(Long id, String email, String username, String password, String phoneNumber, String intro, String description, String saying, String major, String profileImageUrl, String stacks) {
         this.id = id;
         this.email = email;
         this.username = username;
@@ -61,6 +69,14 @@ public class User extends BaseEntity {
         this.saying = saying;
         this.major = major;
         this.profileImageUrl = profileImageUrl;
+        this.stacks = stacks;
+    }
+
+    public List<String> getStackList() {
+        if (stacks == null || stacks.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return List.of(stacks.split(", "));
     }
 
     public void updatePassword(String newPassword) {
@@ -79,11 +95,14 @@ public class User extends BaseEntity {
         });
     }
 
-    public void updateProfile(String intro, String description, String major) {
+    public void updateProfile(String intro, String description, String major, String saying, List<String> stacks) {
         if (StringUtils.hasText(intro)) this.intro = intro;
         if (StringUtils.hasText(description)) this.description = description;
         if (StringUtils.hasText(major)) this.major = major;
-        if (StringUtils.hasText(this.saying)) this.saying = this.saying;
+        if (StringUtils.hasText(saying)) this.saying = saying;
+        if (stacks != null && !stacks.isEmpty()) {
+            this.stacks = String.join(", ", stacks);
+        }
     }
 
     public void addLionInfo(LionInfo lionInfo) {
@@ -91,13 +110,27 @@ public class User extends BaseEntity {
         lionInfo.setUser(this);
     }
 
-    public void generateCurrentLionInfo(int currentGeneration, Part part) {
+    public void generateCurrentLionInfo(int currentGeneration, Part part, Role role, DepartmentType departmentType) {
         LionInfo lionInfo = LionInfo.builder()
                 .generation(currentGeneration)
-                .part(part) // 초기 파트는 null
-                .role(Role.ROLE_USER) // 초기 역할은 null
+                .part(part)
+                .role(role)
+                .departmentType(departmentType)
                 .build();
 
         this.addLionInfo(lionInfo);
+    }
+
+    public void updateMajorFromApplication(Application application) {
+        this.major = application.getMajor();
+    }
+
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+
+    public void setLionInfos(List<LionInfo> newLionInfos) {
+        this.lionInfos.clear();
+        this.lionInfos.addAll(newLionInfos);
     }
 }

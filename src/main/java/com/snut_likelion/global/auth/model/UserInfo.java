@@ -41,7 +41,7 @@ public class UserInfo {
                 .username(user.getUsername())
                 .password(user.getPassword())
                 .email(user.getEmail())
-                .role(role.name())
+                .role(role != null ? role.name() : null)
                 .build();
     }
 }

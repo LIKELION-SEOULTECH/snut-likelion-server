@@ -8,7 +8,6 @@ import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.entity.ProjectRetrospection;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;
-import com.snut_likelion.domain.project.infra.FileProvider;
 import com.snut_likelion.domain.project.infra.ProjectRepository;
 import com.snut_likelion.domain.project.infra.ProjectRetrospectionRepository;
 import com.snut_likelion.domain.user.entity.LionInfo;
@@ -19,7 +18,7 @@ import com.snut_likelion.domain.user.repository.LionInfoRepository;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.BadRequestException;
-import com.snut_likelion.global.error.exception.NotFoundException;
+import com.snut_likelion.global.provider.FileProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -100,7 +99,6 @@ class ProjectCommandServiceTest {
                 .websiteUrl(spyProject.getWebsiteUrl())
                 .tags(List.of("tag1", "tag2"))
                 .images(List.of(img))
-                .memberIds(List.of(1L))
                 .retrospections(List.of(rd))
                 .build();
         CreateProjectRequest spyReq = spy(realReq);
@@ -141,7 +139,6 @@ class ProjectCommandServiceTest {
                 .websiteUrl("url")
                 .tags(List.of())
                 .images(List.of(img))
-                .memberIds(List.of())
                 .retrospections(List.of())
                 .build();
 
@@ -165,33 +162,48 @@ class ProjectCommandServiceTest {
                 .build();
         oldProject.setTags(List.of("oldTag"));
         oldProject.addImage(List.of("oldImage"));
-        LionInfo li = LionInfo.of(13, Part.BACKEND, Role.ROLE_USER);
-        ProjectParticipation p1 = new ProjectParticipation(li, oldProject);
-        oldProject.addParticipation(p1);
 
         when(projectRepository.findById(id)).thenReturn(Optional.of(oldProject));
-        // participants
-        LionInfo li3 = LionInfo.of(13, Part.BACKEND, Role.ROLE_USER);
-        when(lionInfoRepository.findByUser_IdAndGeneration(3L, 14))
-                .thenReturn(Optional.of(li3));
+//
+//        // participants
+//        LionInfo li = LionInfo.of(13, Part.BACKEND, Role.ROLE_USER);
+//        User writer = User.builder()
+//                .id(3L)
+//                .username("writer")
+//                .build();
+//        writer.addLionInfo(li);
+//
+//        ProjectParticipation p1 = new ProjectParticipation(li, oldProject);
+//        oldProject.addParticipation(p1);
+//
+//        when(lionInfoRepository.findByUser_IdAndGeneration(3L, 14))
+//                .thenReturn(Optional.of(li));
 
         // retrospections: existing and new
+        long existingRetMemberId = 2L;
         RetrospectionDto existingDto = RetrospectionDto.builder()
-                .memberId(2L)
+                .memberId(existingRetMemberId)
                 .content("updatedContent")
                 .build();
+        ProjectRetrospection existingRet = new ProjectRetrospection("existingContent");
+        existingRet.setWriter(User.builder().id(existingRetMemberId).build());
+        oldProject.addRetrospection(existingRet);
+        LionInfo li2 = LionInfo.of(14, Part.FRONTEND, Role.ROLE_USER);
+        oldProject.addParticipation(new ProjectParticipation(li2, oldProject));
+        when(projectRetrospectionRepository
+                .findByWriter_IdAndProject_Id(existingRetMemberId, id))
+                .thenReturn(Optional.of(existingRet));
+
         RetrospectionDto newDto = RetrospectionDto.builder()
                 .memberId(4L)
                 .content("newContent")
                 .build();
-        ProjectRetrospection existingRet = new ProjectRetrospection("existingContent");
-        oldProject.addRetrospection(existingRet);
-        existingRet.setWriter(User.builder().id(2L).build());
-        when(projectRetrospectionRepository
-                .findByWriter_IdAndProject_Id(2L, id))
-                .thenReturn(Optional.of(existingRet));
         when(userRepository.findById(4L))
                 .thenReturn(Optional.of(User.builder().id(4L).build()));
+
+        LionInfo li4 = LionInfo.of(14, Part.BACKEND, Role.ROLE_USER);
+        when(lionInfoRepository.findByUser_IdAndGeneration(4L, 14))
+                .thenReturn(Optional.of(li4));
         // images
         MultipartFile img = mock(MultipartFile.class);
         when(img.getContentType()).thenReturn("image/jpeg");
@@ -207,11 +219,10 @@ class ProjectCommandServiceTest {
                 .category(ProjectCategory.IDEATHON)
                 .tags(List.of("newTag"))
                 .newImages(List.of(img))
-                .memberIds(List.of(3L))
                 .retrospections(List.of(existingDto, newDto))
                 .build();
         // When
-        projectCommandService.modify(loginUser, id, req);
+        projectCommandService.modify(id, req);
 
         // Then
         assertAll(
@@ -226,7 +237,7 @@ class ProjectCommandServiceTest {
                 () -> assertThat(oldProject.getWebsiteUrl()).isEqualTo("http://old.com"),
                 () -> assertThat(oldProject.getTagList()).containsExactly("NEWTAG"),
                 () -> assertThat(oldProject.getImageUrlList()).containsExactly("oldImage", "modUrl"),
-                () -> assertThat(oldProject.getParticipations()).hasSize(1),
+                () -> assertThat(oldProject.getParticipations()).hasSize(2),
                 () -> assertThat(oldProject.getRetrospections()).hasSize(2),
                 () -> assertThat(oldProject.getRetrospections()).extracting(ProjectRetrospection::getContent)
                         .containsExactly("updatedContent", "newContent")
@@ -252,7 +263,7 @@ class ProjectCommandServiceTest {
         when(fileProvider.extractImageName("http://cdn/b.jpg")).thenReturn("b.jpg");
 
         // When
-        projectCommandService.remove(loginUser, id);
+        projectCommandService.remove(id);
 
         // Then
         verify(projectRepository).delete(project);
@@ -278,45 +289,10 @@ class ProjectCommandServiceTest {
         when(fileProvider.extractImageName("http://cdn/x.png")).thenReturn("x.png");
 
         // When
-        projectCommandService.removeImage(loginUser, id, "http://cdn/x.png");
+        projectCommandService.removeImage(id, "http://cdn/x.png");
 
         // Then
         assertThat(project.getImageUrlList()).containsExactly("http://cdn/y.png");
         verify(fileProvider).deleteFile("x.png");
-    }
-
-    @Test
-    void create_missingLionInfo_throwsNotFound() {
-        Project spyProject = spy(Project.builder()
-                .name("Test Project")
-                .intro("This is a test project")
-                .description("Detailed description of the test project")
-                .generation(13)
-                .category(ProjectCategory.HACKATHON)
-                .websiteUrl("http://example.com")
-                .build());
-
-        CreateProjectRequest realReq = CreateProjectRequest.builder()
-                .name("Test Project")
-                .intro("This is a test project")
-                .description("Detailed description of the test project")
-                .generation(13)
-                .category(ProjectCategory.HACKATHON)
-                .websiteUrl("http://example.com")
-                .tags(List.of("tag1", "tag2"))
-                .images(List.of())
-                .memberIds(List.of(5L))
-                .retrospections(List.of())
-                .build();
-
-        CreateProjectRequest spyReq = spy(realReq);
-        doReturn(spyProject).when(spyReq).toEntityWithValue();
-
-        when(lionInfoRepository.findByUser_IdAndGeneration(5L, spyProject.getGeneration()))
-                .thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> projectCommandService.create(spyReq))
-                .isInstanceOf(NotFoundException.class)
-                .hasMessage(ProjectErrorCode.NOT_FOUND_LION_INFO.getMessage());
     }
 }

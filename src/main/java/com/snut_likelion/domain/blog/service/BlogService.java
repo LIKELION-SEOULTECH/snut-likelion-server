@@ -1,15 +1,19 @@
 package com.snut_likelion.domain.blog.service;
 
-import com.snut_likelion.domain.blog.dto.*;
-import com.snut_likelion.domain.blog.entity.*;
+import com.snut_likelion.domain.blog.dto.BlogDetailResponse;
+import com.snut_likelion.domain.blog.dto.CreateBlogRequest;
+import com.snut_likelion.domain.blog.dto.UpdateBlogRequest;
+import com.snut_likelion.domain.blog.entity.BlogImage;
+import com.snut_likelion.domain.blog.entity.BlogPost;
+import com.snut_likelion.domain.blog.entity.PostStatus;
 import com.snut_likelion.domain.blog.exception.BlogErrorCode;
 import com.snut_likelion.domain.blog.repository.BlogPostRepository;
-import com.snut_likelion.domain.project.infra.FileProvider;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.NotFoundException;
+import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -18,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,20 +33,37 @@ import java.util.stream.Collectors;
 public class BlogService {
 
     private final BlogPostRepository postRepo;
-    private final UserRepository     userRepo;
-    private final FileProvider       fileProvider;
-    private final BlogQueryService   queryService;
+    private final UserRepository userRepo;
+    private final FileProvider fileProvider;
+    private final BlogQueryService queryService;
 
-    @Lazy @Autowired
+    @Lazy
+    @Autowired
     private BlogService self;
 
-    public Long createPost(CreateBlogRequest req, UserInfo info) { return self.createPost(req, toUser(info)); }
-    public Long updatePost(Long id, UpdateBlogRequest req, UserInfo info) { return self.updatePost(id, req, toUser(info)); }
-    public void deletePost(Long id, UserInfo info) { self.deletePost(id, toUser(info)); }
+    public Long createPost(CreateBlogRequest req, UserInfo info) {
+        return self.createPost(req, toUser(info));
+    }
 
-    public Long saveDraft(CreateBlogRequest req, UserInfo info) { return self.saveDraft(req, toUser(info)); }
-    public BlogDetailResponse loadDraft(UserInfo info) { return self.loadDraft(toUser(info)); }
-    public void discardDraft(UserInfo info) { self.discardDraft(toUser(info)); }
+    public Long updatePost(Long id, UpdateBlogRequest req, UserInfo info) {
+        return self.updatePost(id, req, toUser(info));
+    }
+
+    public void deletePost(Long id, UserInfo info) {
+        self.deletePost(id, toUser(info));
+    }
+
+    public Long saveDraft(CreateBlogRequest req, UserInfo info) {
+        return self.saveDraft(req, toUser(info));
+    }
+
+    public BlogDetailResponse loadDraft(UserInfo info) {
+        return self.loadDraft(toUser(info));
+    }
+
+    public void discardDraft(UserInfo info) {
+        self.discardDraft(toUser(info));
+    }
 
     @Transactional
     @PreAuthorize("@authChecker.checkIsOfficialAndManager(#req.category, principal)")

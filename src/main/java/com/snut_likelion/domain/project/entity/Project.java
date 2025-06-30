@@ -45,6 +45,7 @@ public class Project extends BaseEntity {
 
     private String tags;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String images;
 
     @Builder

@@ -12,13 +12,14 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
-    @Query("select u from User u join fetch LionInfo li on u.id = li.user.id " +
-            "where u.email = :email")
+    @Query("SELECT u FROM User u " +
+            "LEFT JOIN FETCH LionInfo li on u.id = li.user.id " +
+            "WHERE u.email = :email")
     Optional<User> findWithLionInfoByEmail(String email);
 
-    boolean existsByEmailAndUsername(String email, String username);
+    boolean existsByEmail(String email);
 
-    boolean existsByEmailOrUsername(String email, String username);
+    boolean existsByEmailOrUsernameOrPhoneNumber(String email, String username, String phoneNumber);
 
     @Query("select u from User u join fetch u.lionInfos " +
             "where u.id = :userId")
