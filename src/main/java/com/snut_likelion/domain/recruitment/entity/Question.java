@@ -7,15 +7,30 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@Table(
+//        name = "question",
+//        uniqueConstraints = {
+//                @UniqueConstraint(
+//                        name = "UK_QUESTION_ORDER_RECRUITMENT",
+//                        columnNames = {"orderNum", "recruitment_id"}
+//                )
+//        }
+//)
 public class Question extends BaseEntity {
 
     @Column(nullable = false)
     private String text;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private QuestionTarget questionTarget;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -27,35 +42,33 @@ public class Question extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private DepartmentType departmentType; // 부서 질문일 경우
 
+    @Column(nullable = false)
+    private int orderNum;
+
+    private String buttonList;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruitment_id", referencedColumnName = "id")
     private Recruitment recruitment; // 해당 질문이 속한 모집 공고
 
     @Builder
-    public Question(Long id, String text, QuestionType questionType, Part part, DepartmentType departmentType) {
+    public Question(Long id, String text, QuestionTarget questionTarget, QuestionType questionType, Part part, DepartmentType departmentType, int orderNum, String buttonList) {
         this.id = id;
         this.text = text;
+        this.questionTarget = questionTarget;
         this.questionType = questionType;
         this.part = part;
         this.departmentType = departmentType;
+        this.orderNum = orderNum;
+        this.buttonList = buttonList;
     }
 
-    public void update(String text, QuestionType questionType, Part part, DepartmentType departmentType) {
-        if (StringUtils.hasText(text)) {
-            this.text = text;
+    public List<String> getButtonList() {
+        if (buttonList == null || buttonList.isEmpty()) {
+            return new ArrayList<>();
         }
 
-        if (questionType != null) {
-            this.questionType = questionType;
-        }
-
-        if (part != null) {
-            this.part = part;
-        }
-
-        if (departmentType != null) {
-            this.departmentType = departmentType;
-        }
+        return List.of(buttonList.split(", "));
     }
 
     /**

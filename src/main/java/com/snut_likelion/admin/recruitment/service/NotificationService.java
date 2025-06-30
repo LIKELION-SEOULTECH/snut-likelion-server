@@ -1,4 +1,4 @@
-package com.snut_likelion.domain.recruitment.service;
+package com.snut_likelion.admin.recruitment.service;
 
 import com.snut_likelion.domain.recruitment.entity.Application;
 import com.snut_likelion.domain.recruitment.entity.ApplicationStatus;
@@ -31,11 +31,10 @@ public class NotificationService {
         }
 
         switch (status) {
-            case INTERVIEW_SCHEDULED ->
-                    mailSender.sendInterviewScheduledMail(email, name, recruitmentType.getDescription());
-            case ACCEPTED -> mailSender.sendAcceptedMail(
+            case PAPER_PASS -> mailSender.sendInterviewScheduledMail(email, name, recruitmentType.getDescription());
+            case FINAL_PASS -> mailSender.sendAcceptedMail(
                     email, name, recruitmentType.getDescription(), application.getPart().getDescription());
-            case REJECTED -> mailSender.sendRejectedMail(
+            case FAILED -> mailSender.sendRejectedMail(
                     email, name, recruitmentType.getDescription(), application.getPart().getDescription());
             default -> throw new BadRequestException(ApplicationErrorCode.INVALID_STATUS_CHANGE);
         }

@@ -18,7 +18,7 @@ public enum PermitAllUrls {
     SEND_CERTIFICATION_CODE("/api/v1/auth/email/send", POST),
     CERTIFY_CODE("/api/v1/auth/email/certify", POST),
     FIND_PASSWORD("/api/v1/auth/password/find", POST),
-    CHANGE_PASSWORD("/api/v1/auth/password/change", PATCH),
+    RESET_PASSWORD("/api/v1/auth/password/reset", PATCH),
     REFRESH("/api/v1/auth/refresh", GET),
     GET_IMAGE("/api/v1/images*", GET),
     GET_ALL_PROJECTS("/api/v1/projects", GET),

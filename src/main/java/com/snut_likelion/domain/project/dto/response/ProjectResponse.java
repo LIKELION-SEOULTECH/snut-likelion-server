@@ -17,7 +17,7 @@ public class ProjectResponse {
     private String description;
     private int generation;
     private List<String> tags;
-    private ProjectCategory category;
+    private String category;
     private String thumbnailUrl;
 
     @Builder
@@ -27,7 +27,7 @@ public class ProjectResponse {
         this.description = description;
         this.generation = generation;
         this.tags = tags;
-        this.category = category;
+        this.category = category.getDescription();
         this.thumbnailUrl = thumbnailUrl;
     }
 

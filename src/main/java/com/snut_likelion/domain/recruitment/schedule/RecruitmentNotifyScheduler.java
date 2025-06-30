@@ -1,12 +1,12 @@
 package com.snut_likelion.domain.recruitment.schedule;
 
+import com.snut_likelion.admin.recruitment.service.NotificationService;
 import com.snut_likelion.domain.recruitment.entity.Recruitment;
 import com.snut_likelion.domain.recruitment.entity.RecruitmentSubscription;
 import com.snut_likelion.domain.recruitment.entity.RecruitmentType;
 import com.snut_likelion.domain.recruitment.entity.SubscriptionType;
 import com.snut_likelion.domain.recruitment.infra.RecruitmentRepository;
 import com.snut_likelion.domain.recruitment.infra.RecruitmentSubscriptionRepository;
-import com.snut_likelion.domain.recruitment.service.NotificationService;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class RecruitmentNotifyScheduler {
     private final NotificationService notificationService;
     private final RecruitmentSubscriptionRepository recruitmentSubscriptionRepository;
 
-    @Scheduled(cron = "0 * * * * *") // 매일 19:00
+    @Scheduled(cron = "0 0 19 * * *") // 매일 19:00
     @Transactional
     public void sendRecruitmentStartNotifications() {
         LocalDateTime now = LocalDateTime.now();

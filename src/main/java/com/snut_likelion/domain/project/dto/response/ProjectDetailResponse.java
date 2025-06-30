@@ -24,7 +24,7 @@ public class ProjectDetailResponse {
     private String appstoreUrl;
     private List<String> tags;
     private List<Participant> members;
-    private ProjectCategory category;
+    private String category;
     private List<String> imageUrls;
 
     @Builder
@@ -39,7 +39,7 @@ public class ProjectDetailResponse {
         this.appstoreUrl = appstoreUrl;
         this.tags = tags;
         this.members = members;
-        this.category = category;
+        this.category = category.getDescription();
         this.imageUrls = imageUrls;
     }
 
@@ -55,15 +55,12 @@ public class ProjectDetailResponse {
                 .appstoreUrl(project.getAppstoreUrl())
                 .category(project.getCategory())
                 .tags(project.getTagList())
-                .members(
-                        project.getParticipations().stream()
-                                .map(projectParticipation -> {
-                                    User member = projectParticipation.getLionInfo().getUser(); // TODO: N+1
-                                    return Participant.from(member);
-                                })
-                                .toList()
-                ) // TODO: N+1
                 .imageUrls(project.getImageUrlList())
+                .members(project.getParticipations().stream()
+                        .map(p -> p.getLionInfo().getUser())
+                        .map(Participant::from)
+                        .toList()
+                )
                 .build();
     }
 

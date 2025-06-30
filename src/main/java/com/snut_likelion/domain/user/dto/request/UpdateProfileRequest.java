@@ -20,15 +20,17 @@ public class UpdateProfileRequest {
     private String description;
     private String saying;
     private String major;
+    private List<String> stacks;
     private List<PortfolioLinkDto> portfolioLinks = new ArrayList<>();
 
     @Builder
-    public UpdateProfileRequest(MultipartFile profileImage, String intro, String description, String saying, String major, List<PortfolioLinkDto> portfolioLinks) {
+    public UpdateProfileRequest(MultipartFile profileImage, String intro, String description, String saying, String major, List<String> stacks, List<PortfolioLinkDto> portfolioLinks) {
         this.profileImage = profileImage;
         this.intro = intro;
         this.description = description;
         this.saying = saying;
         this.major = major;
+        this.stacks = stacks;
         this.portfolioLinks = portfolioLinks == null ? new ArrayList<>() : portfolioLinks;
     }
 

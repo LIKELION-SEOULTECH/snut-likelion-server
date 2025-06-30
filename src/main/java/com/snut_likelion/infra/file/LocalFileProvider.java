@@ -92,7 +92,7 @@ public class LocalFileProvider implements FileProvider {
         if (imageUrl == null || imageUrl.isEmpty()) {
             throw new BadRequestException(FileErrorCode.INVALID_IMAGE_URL);
         }
-        String[] parts = imageUrl.split("/");
+        String[] parts = imageUrl.split("imageName=");
         if (parts.length == 0) {
             throw new BadRequestException(FileErrorCode.INVALID_IMAGE_URL);
         }
