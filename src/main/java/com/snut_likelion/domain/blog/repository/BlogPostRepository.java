@@ -16,6 +16,14 @@ public interface BlogPostRepository extends JpaRepository<BlogPost, Long> {
             Pageable   pageable
     );
 
+    // 제목 검색
+    Page<BlogPost> findByStatusAndCategoryAndTitleContainingIgnoreCaseOrderByUpdatedAtDesc(
+            PostStatus status,
+            Category   category,
+            String     title,     // keyword
+            Pageable   pageable
+    );
+
     // 작성자별 임시저장(DRAFT) 단건
     Optional<BlogPost> findByAuthorAndStatus(
             User       author,

@@ -20,10 +20,17 @@ public class BlogQueryService {
     private final BlogPostRepository postRepo;
 
     // PUBLISHED 목록
-    public Page<BlogSummaryResponse> getPostList(Category category, int page, int size) {
-        Page<BlogPost> posts = postRepo
-                .findByStatusAndCategoryOrderByUpdatedAtDesc(
-                        PostStatus.PUBLISHED, category, PageRequest.of(page, size));
+    public Page<BlogSummaryResponse> getPostList(Category category,
+                                                 int page, int size,
+                                                 String keyword) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<BlogPost> posts = (keyword == null || keyword.isBlank())
+                ? postRepo.findByStatusAndCategoryOrderByUpdatedAtDesc(
+                PostStatus.PUBLISHED, category, pageable)
+                : postRepo.findByStatusAndCategoryAndTitleContainingIgnoreCaseOrderByUpdatedAtDesc(
+                PostStatus.PUBLISHED, category, keyword, pageable);
 
         return posts.map(this::toSummaryDto);
     }

@@ -26,9 +26,10 @@ public class BlogController {
     public ApiResponse<Page<BlogSummaryResponse>> getPostList(
             @RequestParam Category category,
             @RequestParam(defaultValue = "0")  int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false)    String keyword) {
 
-        return ApiResponse.success(queryService.getPostList(category, page, size));
+        return ApiResponse.success(queryService.getPostList(category, page, size, keyword));
     }
 
     // 단건 조회
