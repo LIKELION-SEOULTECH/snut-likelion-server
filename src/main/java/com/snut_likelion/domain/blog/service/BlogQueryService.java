@@ -58,4 +58,19 @@ public class BlogQueryService {
         return BlogDetailResponse.from(draft);
     }
 
+    // 내가 쓴 글 목록
+    public Page<BlogSummaryResponse> getMyPosts(UserInfo me, int page, int size) {
+
+        User author = userRepo.findById(me.getId())
+                .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return postRepo
+                .findByStatusAndAuthorOrderByUpdatedAtDesc(
+                        PostStatus.PUBLISHED,
+                        author,
+                        pageable)
+                .map(BlogSummaryResponse::from);
+    }
 }

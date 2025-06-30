@@ -35,4 +35,11 @@ public interface BlogPostRepository extends JpaRepository<BlogPost, Long> {
             User       author,
             PostStatus status
     );
+
+    // 내가 쓴 글
+    Page<BlogPost> findByStatusAndAuthorOrderByUpdatedAtDesc(
+            PostStatus status,
+            User       author,
+            Pageable   pageable
+    );
 }

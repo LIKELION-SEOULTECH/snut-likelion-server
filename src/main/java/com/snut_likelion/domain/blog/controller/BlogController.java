@@ -70,6 +70,17 @@ public class BlogController {
         commandService.deletePost(id, user.getUserInfo());
     }
 
+    // 내가 쓴 글(PUBLISHED) 목록
+    @GetMapping("/me")
+    public ApiResponse<Page<BlogSummaryResponse>> getMyPosts(
+            @AuthenticationPrincipal SnutLikeLionUser user,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.success(
+                queryService.getMyPosts(user.getUserInfo(), page, size)
+        );
+    }
+
     // 내 임시저장 불러오기
     @GetMapping(value = "/drafts/me")
     public ApiResponse<BlogDetailResponse> getMyDraft(
