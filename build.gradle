@@ -78,6 +78,10 @@ test {
     useJUnitPlatform()
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs += ['-parameters']
+}
+
 clean {
     delete file('src/main/generated')
 }

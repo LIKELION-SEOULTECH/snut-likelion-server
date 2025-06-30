@@ -107,8 +107,18 @@ public class BlogPost extends BaseEntity {
     }
 
     public void setImages(List<BlogImage> images) {
-        this.getImages().clear();
-        this.getImages().addAll(images);
+        this.images.clear();
+
+        if (images == null || images.isEmpty()) {
+            this.thumbnailUrl = null;
+            return;
+        }
+
+        for (BlogImage img : images) {
+            img.setPost(this);
+        }
+
+        this.images.addAll(images);
         this.thumbnailUrl = images.get(0).getUrl();
     }
 

@@ -33,21 +33,24 @@ public class BlogCommandService {
     private final FileProvider fileProvider;
 
     @Transactional
-    @PreAuthorize("@authChecker.checkIsOfficialAndManager(#req.category, author)")
+    @PreAuthorize("@authChecker.checkIsOfficialAndManager(#req.category, #author)")
     public Long createPost(CreateBlogRequest req, UserInfo author) {
         BlogPost post = req.toEntity();
 
         User user = userRepo.findById(author.getId())
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
         post.setAuthor(user);
-        post.setImages(this.uploadImages(req.getImages()));
+
+        List<BlogImage> imgs = this.uploadImages(req.getImages());
+        post.setImages(imgs);
+
         post.setTaggedMembers(this.fetchUsers(req.getTaggedMemberIds()));
 
         return postRepo.save(post).getId();
     }
 
     @Transactional
-    @PreAuthorize("@authChecker.checkCanModify(#postId, editor)")
+    @PreAuthorize("@authChecker.checkCanModify(#postId, #editor)")
     public void updatePost(Long postId, UpdateBlogRequest req, UserInfo editor) {
         BlogPost post = postRepo.findById(postId)
                 .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
@@ -66,14 +69,14 @@ public class BlogCommandService {
         }
 
         // 이미지 교체
-        if (req.getImages() != null && !req.getImages().isEmpty()) {
+        if (req.getImages() != null) {
             List<BlogImage> blogImages = this.uploadImages(req.getImages());
             post.setImages(blogImages);
         }
     }
 
     @Transactional
-    @PreAuthorize("@authChecker.checkCanModify(#postId, editor)")
+    @PreAuthorize("@authChecker.checkCanModify(#postId, #editor)")
     public void deletePost(Long postId, UserInfo editor) {
         BlogPost post = postRepo.findById(postId)
                 .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
@@ -96,9 +99,9 @@ public class BlogCommandService {
                         draft -> {
                             draft.updatePost(req.getTitle(), req.getContentHtml(), req.getCategory());
                             draft.setTaggedMembers(this.fetchUsers(req.getTaggedMemberIds()));
-                            if (req.getImages() != null && !req.getImages().isEmpty()) {
-                                List<BlogImage> imgs = this.uploadImages(req.getImages());
-                                draft.setImages(imgs);
+
+                            if (req.getImages() != null) {
+                                draft.setImages(this.uploadImages(req.getImages()));
                             }
                         },
                         () -> {
