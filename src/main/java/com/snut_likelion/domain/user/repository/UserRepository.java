@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE u.email = :email")
     Optional<User> findWithLionInfoByEmail(String email);
 
-    boolean existsByEmailAndUsername(String email, String username);
+    boolean existsByEmail(String email);
 
     boolean existsByEmailOrUsernameOrPhoneNumber(String email, String username, String phoneNumber);
 

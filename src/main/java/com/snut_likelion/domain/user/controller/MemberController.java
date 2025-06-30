@@ -1,6 +1,5 @@
 package com.snut_likelion.domain.user.controller;
 
-import com.snut_likelion.domain.user.dto.request.UpdateLionInfoRequest;
 import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
 import com.snut_likelion.domain.user.dto.response.LionInfoDetailsResponse;
 import com.snut_likelion.domain.user.dto.response.MemberDetailResponse;
@@ -12,6 +11,7 @@ import com.snut_likelion.global.auth.model.SnutLikeLionUser;
 import com.snut_likelion.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +46,17 @@ public class MemberController {
         );
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ApiResponse<MemberDetailResponse> getMyDetails(
+            @AuthenticationPrincipal SnutLikeLionUser loginUser
+    ) {
+        return ApiResponse.success(
+                memberQueryService.getMyDetails(loginUser.getId()),
+                "멤버 상세 정보 조회 성공"
+        );
+    }
+
     @GetMapping("/{memberId}")
     public ApiResponse<MemberDetailResponse> getMemberDetails(
             @PathVariable("memberId") Long memberId
@@ -66,6 +77,7 @@ public class MemberController {
 
     @PatchMapping("/{memberId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRole('ROLE_USER')")
     public void updateProfile(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("memberId") Long memberId,
@@ -73,20 +85,6 @@ public class MemberController {
     ) {
         memberCommandService.updateProfile(loginUser.getUserInfo(), memberId, req);
     }
-
-    /**
-     * 수정 막아두었습니다.
-     */
-//    @PatchMapping("/{memberId}/lion-info")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void updateLionInfo(
-//            @AuthenticationPrincipal SnutLikeLionUser loginUser,
-//            @PathVariable("memberId") Long memberId,
-//            @RequestParam(value = "generation") int generation,
-//            @RequestBody UpdateLionInfoRequest req
-//    ) {
-//        memberCommandService.upsertLionInfo(loginUser.getUserInfo(), memberId, generation, req);
-//    }
 
     @DeleteMapping("/{memberId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

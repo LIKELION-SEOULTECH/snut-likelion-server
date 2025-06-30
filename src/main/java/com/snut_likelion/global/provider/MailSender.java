@@ -16,5 +16,5 @@ public interface MailSender {
 
     void sendRejectedMail(String toEmail, String username, String recruitmentType, String part);
 
-    void sendRecruitmentStartNotification(String toEmail, String username, int generation, String recruitmentType, LocalDateTime openDate, LocalDateTime closeDate);
+    void sendRecruitmentStartNotification(String toEmail, int generation, String recruitmentType, LocalDateTime openDate, LocalDateTime closeDate);
 }

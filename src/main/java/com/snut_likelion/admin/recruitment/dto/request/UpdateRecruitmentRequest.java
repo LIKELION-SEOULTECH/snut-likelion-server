@@ -1,4 +1,4 @@
-package com.snut_likelion.domain.recruitment.dto.request;
+package com.snut_likelion.admin.recruitment.dto.request;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateRecruitmentRequest {
 
-    private int generation;
+    private Integer generation;
     private String recruitmentType;
     private LocalDateTime openDate;
     private LocalDateTime closeDate;
 
     @Builder
-    public UpdateRecruitmentRequest(int generation, String recruitmentType, LocalDateTime openDate, LocalDateTime closeDate) {
+    public UpdateRecruitmentRequest(Integer generation, String recruitmentType, LocalDateTime openDate, LocalDateTime closeDate) {
         this.generation = generation;
         this.recruitmentType = recruitmentType;
         this.openDate = openDate;

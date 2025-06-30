@@ -23,6 +23,7 @@ public class ApplicationDetailsResponse {
     private String major;
     private Boolean inSchool;
     private String studentId;
+    private String phoneNumber;
     private int grade;
     private Boolean isPersonalInfoConsent;
     private String portfolioName;
@@ -33,12 +34,13 @@ public class ApplicationDetailsResponse {
     private LocalDateTime submittedAt; // 지원서 제출 시간
 
     @Builder
-    public ApplicationDetailsResponse(Long id, String username, String major, Boolean inSchool, String studentId, int grade, Boolean isPersonalInfoConsent, String portfolioName, Part part, DepartmentType departmentType, ApplicationStatus status, List<Answer> answers, LocalDateTime submittedAt) {
+    public ApplicationDetailsResponse(Long id, String username, String major, Boolean inSchool, String studentId, String phoneNumber, int grade, Boolean isPersonalInfoConsent, String portfolioName, Part part, DepartmentType departmentType, ApplicationStatus status, List<Answer> answers, LocalDateTime submittedAt) {
         this.id = id;
         this.username = username;
         this.major = major;
         this.inSchool = inSchool;
         this.studentId = studentId;
+        this.phoneNumber = phoneNumber;
         this.grade = grade;
         this.isPersonalInfoConsent = isPersonalInfoConsent;
         this.portfolioName = portfolioName;
@@ -54,6 +56,7 @@ public class ApplicationDetailsResponse {
                 .id(application.getId())
                 .username(application.getUser().getUsername())
                 .major(application.getMajor())
+                .phoneNumber(application.getUser().getPhoneNumber())
                 .inSchool(application.getInSchool())
                 .studentId(application.getStudentId())
                 .grade(application.getGrade())

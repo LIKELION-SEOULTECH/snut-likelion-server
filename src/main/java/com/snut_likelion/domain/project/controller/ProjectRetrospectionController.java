@@ -6,6 +6,7 @@ import com.snut_likelion.global.auth.model.SnutLikeLionUser;
 import com.snut_likelion.global.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,11 +31,12 @@ public class ProjectRetrospectionController {
 
     @DeleteMapping("/{retrospectionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@authChecker.isMyProject(#loginUser.userInfo, #projectId)")
     public void deleteProjectRetrospection(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId,
             @PathVariable("retrospectionId") Long retrospectionId
     ) {
-        projectRetrospectionService.remove(loginUser.getUserInfo(), projectId, retrospectionId);
+        projectRetrospectionService.remove(projectId, retrospectionId);
     }
 }

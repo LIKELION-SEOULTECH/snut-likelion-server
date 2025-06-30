@@ -56,31 +56,34 @@ public class ProjectController {
 
     @PatchMapping("/{projectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@authChecker.isMyProject(#loginUser.userInfo, #projectId)")
     public void modifyProject(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId,
             @ModelAttribute("updateProjectRequest") @Valid UpdateProjectRequest req
     ) {
-        projectCommandService.modify(loginUser.getUserInfo(), projectId, req);
+        projectCommandService.modify(projectId, req);
     }
 
     @DeleteMapping("/{projectId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@authChecker.isMyProject(#loginUser.userInfo, #projectId)")
     public void deleteProject(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId
     ) {
-        projectCommandService.remove(loginUser.getUserInfo(), projectId);
+        projectCommandService.remove(projectId);
     }
 
     @DeleteMapping("/{projectId}/images")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("@authChecker.isMyProject(#loginUser.userInfo, #projectId)")
     public void deleteProjectImage(
             @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId,
             @RequestParam("imageUrl") String imageUrl
     ) {
-        projectCommandService.removeImage(loginUser.getUserInfo(), projectId, imageUrl);
+        projectCommandService.removeImage(projectId, imageUrl);
     }
 
 }
