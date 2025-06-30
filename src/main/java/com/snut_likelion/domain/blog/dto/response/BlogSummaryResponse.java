@@ -23,7 +23,7 @@ public class BlogSummaryResponse {
         this.postId = postId;
         this.title = title;
         this.updatedAt = updatedAt;
-        this.thumbnailUrl = this.thumbnailUrl;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public static BlogSummaryResponse from(BlogPost blogPost) {
