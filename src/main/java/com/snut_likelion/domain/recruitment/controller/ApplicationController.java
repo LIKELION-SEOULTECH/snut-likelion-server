@@ -33,8 +33,6 @@ public class ApplicationController {
         );
     }
 
-
-    // 임시 저장
     @PostMapping("/recruitments/{recId}/applications")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Object> createApplication(
