@@ -9,6 +9,7 @@ import static org.springframework.http.HttpMethod.*;
 @Getter
 @RequiredArgsConstructor
 public enum PermitAllUrls {
+    FOR_CORS("/**", OPTIONS),
     CSS("/css/**", GET),
     IMAGES("/images/**", GET),
     JS("/js/**", GET),
