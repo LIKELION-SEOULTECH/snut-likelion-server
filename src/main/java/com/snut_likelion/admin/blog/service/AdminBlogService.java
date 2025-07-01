@@ -48,6 +48,6 @@ public class AdminBlogService {
 
     @Transactional
     public void deleteBlogs(List<Long> ids, UserInfo info) {
-        ids.forEach(id -> delete(id, info));
+        ids.forEach(id -> blogCommandService.deletePost(id, info));
     }
 }

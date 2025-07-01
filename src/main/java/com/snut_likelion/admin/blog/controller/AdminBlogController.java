@@ -26,8 +26,8 @@ public class AdminBlogController {
     @GetMapping
     public ApiResponse<BlogPageResponse> getBlogList(
             @RequestParam(value = "category", required = false) String category,
-            @RequestParam(value = "page",      defaultValue = "0") int page,
-            @RequestParam(value = "keyword",   required = false) String keyword
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "keyword", required = false) String keyword
     ) {
         return ApiResponse.success(
                 blogService.getBlogList(category, page, keyword),
@@ -39,7 +39,7 @@ public class AdminBlogController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Object> createBlog(
             @AuthenticationPrincipal SnutLikeLionUser user,
-            @ModelAttribute @Valid CreateBlogRequest req
+            @RequestBody @Valid CreateBlogRequest req
     ) {
         blogService.create(req, user.getUserInfo());
         return ApiResponse.success("블로그 업로드 성공");
@@ -50,7 +50,7 @@ public class AdminBlogController {
     public void modifyBlog(
             @AuthenticationPrincipal SnutLikeLionUser user,
             @PathVariable Long blogId,
-            @ModelAttribute @Valid UpdateBlogRequest req
+            @RequestBody @Valid UpdateBlogRequest req
     ) {
         blogService.modify(blogId, req, user.getUserInfo());
     }
