@@ -1,9 +1,9 @@
 package com.snut_likelion.domain.blog.controller;
 
-import com.snut_likelion.domain.blog.dto.response.BlogDetailResponse;
-import com.snut_likelion.domain.blog.dto.response.BlogSummaryResponse;
 import com.snut_likelion.domain.blog.dto.request.CreateBlogRequest;
 import com.snut_likelion.domain.blog.dto.request.UpdateBlogRequest;
+import com.snut_likelion.domain.blog.dto.response.BlogDetailResponse;
+import com.snut_likelion.domain.blog.dto.response.BlogSummaryPageResponse;
 import com.snut_likelion.domain.blog.entity.Category;
 import com.snut_likelion.domain.blog.service.BlogCommandService;
 import com.snut_likelion.domain.blog.service.BlogQueryService;
@@ -11,7 +11,6 @@ import com.snut_likelion.global.auth.model.SnutLikeLionUser;
 import com.snut_likelion.global.dto.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class BlogController {
 
     // 게시글(PUBLISHED) 목록
     @GetMapping
-    public ApiResponse<Page<BlogSummaryResponse>> getPostList(
+    public ApiResponse<BlogSummaryPageResponse> getPostList(
             @RequestParam Category category,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -36,43 +35,45 @@ public class BlogController {
     }
 
     // 단건 조회
-    @GetMapping(value = "/{id}")
-    public ApiResponse<BlogDetailResponse> getPostDetail(@PathVariable Long id) {
-        return ApiResponse.success(queryService.getPostDetail(id));
+    @GetMapping("/{blogId}")
+    public ApiResponse<BlogDetailResponse> getPostDetail(@PathVariable("blogId") Long blogId) {
+        return ApiResponse.success(queryService.getPostDetail(blogId));
     }
 
     // 게시글 작성(PUBLISHED)
     @PostMapping
     public ApiResponse<Long> createPost(
             @AuthenticationPrincipal SnutLikeLionUser user,
-            @Valid @ModelAttribute CreateBlogRequest req
+            @RequestParam(value = "submit") boolean submit,
+            @RequestBody @Valid CreateBlogRequest req
     ) {
-        Long id = commandService.createPost(req, user.getUserInfo());
+        Long id = commandService.createPost(req, user.getUserInfo(), submit);
         return ApiResponse.success(id);
     }
 
     // 게시글 수정
-    @PatchMapping(value = "/{id}")
+    @PatchMapping(value = "/{blogId}")
     public void updatePost(
             @AuthenticationPrincipal SnutLikeLionUser user,
-            @PathVariable Long id,
-            @ModelAttribute UpdateBlogRequest req
+            @PathVariable("blogId") Long blogId,
+            @RequestParam(value = "submit") boolean submit,
+            @RequestBody @Valid UpdateBlogRequest req
     ) {
-        commandService.updatePost(id, req, user.getUserInfo());
+        commandService.updatePost(blogId, req, user.getUserInfo(), submit);
     }
 
     // 게시글 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{blogId}")
     public void deletePost(
             @AuthenticationPrincipal SnutLikeLionUser user,
-            @PathVariable Long id
+            @PathVariable("blogId") Long blogId
     ) {
-        commandService.deletePost(id, user.getUserInfo());
+        commandService.deletePost(blogId, user.getUserInfo());
     }
 
     // 내가 쓴 글(PUBLISHED) 목록
     @GetMapping("/me")
-    public ApiResponse<Page<BlogSummaryResponse>> getMyPosts(
+    public ApiResponse<BlogSummaryPageResponse> getMyPosts(
             @AuthenticationPrincipal SnutLikeLionUser user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -88,16 +89,6 @@ public class BlogController {
     ) {
         return ApiResponse.success(
                 queryService.loadDraft(user.getUserInfo()));
-    }
-
-    // 임시저장 저장/덮어쓰기
-    @PostMapping(value = "/drafts")
-    public ApiResponse<Object> saveDraft(
-            @AuthenticationPrincipal SnutLikeLionUser user,
-            @Valid @ModelAttribute CreateBlogRequest req
-    ) {
-        commandService.saveDraft(req, user.getUserInfo());
-        return ApiResponse.success("임시저장 성공");
     }
 
     // 임시저장 버리기

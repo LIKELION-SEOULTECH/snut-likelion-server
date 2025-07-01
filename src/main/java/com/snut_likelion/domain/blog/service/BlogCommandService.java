@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,24 +33,27 @@ public class BlogCommandService {
 
     @Transactional
     @PreAuthorize("@authChecker.checkIsOfficialAndManager(#req.category, #author)")
-    public Long createPost(CreateBlogRequest req, UserInfo author) {
+    public Long createPost(CreateBlogRequest req, UserInfo author, boolean submit) {
         BlogPost post = req.toEntity();
 
         User user = userRepo.findById(author.getId())
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
         post.setAuthor(user);
-
-        List<BlogImage> imgs = this.uploadImages(req.getImages());
-        post.setImages(imgs);
-
+        post.setImages(this.mappingToBlogImages(req.getImages()));
         post.setTaggedMembers(this.fetchUsers(req.getTaggedMemberIds()));
+
+        if (submit) {
+            post.setStatus(PostStatus.PUBLISHED);
+        } else {
+            post.setStatus(PostStatus.DRAFT);
+        }
 
         return postRepo.save(post).getId();
     }
 
     @Transactional
     @PreAuthorize("@authChecker.checkCanModify(#postId, #editor)")
-    public void updatePost(Long postId, UpdateBlogRequest req, UserInfo editor) {
+    public void updatePost(Long postId, UpdateBlogRequest req, UserInfo editor, boolean submit) {
         BlogPost post = postRepo.findById(postId)
                 .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
 
@@ -61,17 +63,18 @@ public class BlogCommandService {
                 req.getCategory()
         );
 
-        if (req.getStatus() != null) post.changeStatus(req.getStatus());
-
-        // 태그 교체
         if (req.getTaggedMemberIds() != null) {
             post.setTaggedMembers(this.fetchUsers(req.getTaggedMemberIds()));
         }
 
-        // 이미지 교체
-        if (req.getImages() != null) {
-            List<BlogImage> blogImages = this.uploadImages(req.getImages());
-            post.setImages(blogImages);
+        if (req.getNewImages() != null) {
+            post.setImages(this.mappingToBlogImages(req.getNewImages()));
+        }
+
+        if (submit) {
+            post.setStatus(PostStatus.PUBLISHED);
+        } else {
+            post.setStatus(PostStatus.DRAFT);
         }
     }
 
@@ -88,32 +91,6 @@ public class BlogCommandService {
         postRepo.delete(post);
     }
 
-    // 임시저장 / 덮어쓰기
-    @Transactional
-    public void saveDraft(CreateBlogRequest req, UserInfo author) {
-        User user = userRepo.findById(author.getId())
-                .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
-
-        postRepo.findByAuthorAndStatus(user, PostStatus.DRAFT)
-                .ifPresentOrElse(
-                        draft -> {
-                            draft.updatePost(req.getTitle(), req.getContentHtml(), req.getCategory());
-                            draft.setTaggedMembers(this.fetchUsers(req.getTaggedMemberIds()));
-
-                            if (req.getImages() != null) {
-                                draft.setImages(this.uploadImages(req.getImages()));
-                            }
-                        },
-                        () -> {
-                            BlogPost post = req.toEntity();
-                            post.setAuthor(user);
-                            post.setImages(this.uploadImages(req.getImages()));
-                            post.setTaggedMembers(this.fetchUsers(req.getTaggedMemberIds()));
-                            postRepo.save(post);
-                        }
-                );
-    }
-
     // 버리기
     @Transactional
     public void discardDraft(UserInfo author) {
@@ -122,13 +99,12 @@ public class BlogCommandService {
         postRepo.deleteByAuthorAndStatus(user, PostStatus.DRAFT);
     }
 
-    private List<BlogImage> uploadImages(List<MultipartFile> files) {
-        if (files == null || files.isEmpty()) return List.of();
+    private List<BlogImage> mappingToBlogImages(List<String> imageUrls) {
+        if (imageUrls == null || imageUrls.isEmpty()) return List.of();
         List<BlogImage> list = new ArrayList<>();
-        for (MultipartFile f : files) {
-            String storedName = fileProvider.storeFile(f);
+        for (String url : imageUrls) {
             BlogImage blogImage = BlogImage.builder()
-                    .url(fileProvider.buildImageUrl(storedName))
+                    .url(url)
                     .build();
             list.add(blogImage);
         }

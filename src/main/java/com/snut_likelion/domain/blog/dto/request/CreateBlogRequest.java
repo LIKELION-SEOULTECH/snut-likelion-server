@@ -2,12 +2,11 @@ package com.snut_likelion.domain.blog.dto.request;
 
 import com.snut_likelion.domain.blog.entity.BlogPost;
 import com.snut_likelion.domain.blog.entity.Category;
-import com.snut_likelion.domain.blog.entity.PostStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,35 +23,17 @@ public class CreateBlogRequest {
     @NotNull(message = "카테고리를 선택해주세요.")
     private Category category;
 
-    private List<MultipartFile> images;
-
     private List<Long> taggedMemberIds;
 
-    // 임시저장 / 게시 (기본 = PUBLISHED)
-    private PostStatus status = PostStatus.PUBLISHED;
+    private List<String> images;
 
-    public void setTitle(String title) {
+    @Builder
+    public CreateBlogRequest(String title, String contentHtml, Category category, List<String> images, List<Long> taggedMemberIds) {
         this.title = title;
-    }
-
-    public void setContentHtml(String contentHtml) {
         this.contentHtml = contentHtml;
-    }
-
-    public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public void setImages(List<MultipartFile> images) {
         this.images = images;
-    }
-
-    public void setTaggedMemberIds(List<Long> ids) {
-        this.taggedMemberIds = ids;
-    }
-
-    public void setStatus(PostStatus status) {
-        this.status = status;
+        this.taggedMemberIds = taggedMemberIds;
     }
 
     public BlogPost toEntity() {
@@ -60,7 +41,6 @@ public class CreateBlogRequest {
                 .title(title)
                 .content(contentHtml)
                 .category(category)
-                .status(status)
                 .build();
     }
 }

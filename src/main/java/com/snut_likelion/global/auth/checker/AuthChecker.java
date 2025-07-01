@@ -73,7 +73,7 @@ public class AuthChecker {
         BlogPost post = blogPostRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
 
-        boolean isManager = hasManagerAuthority(user);
+        boolean isManager = this.hasManagerAuthority(user);
         if (post.getCategory() == Category.OFFICIAL) {
             return isManager;
         }

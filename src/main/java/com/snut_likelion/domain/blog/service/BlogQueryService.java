@@ -1,7 +1,7 @@
 package com.snut_likelion.domain.blog.service;
 
 import com.snut_likelion.domain.blog.dto.response.BlogDetailResponse;
-import com.snut_likelion.domain.blog.dto.response.BlogSummaryResponse;
+import com.snut_likelion.domain.blog.dto.response.BlogSummaryPageResponse;
 import com.snut_likelion.domain.blog.entity.BlogPost;
 import com.snut_likelion.domain.blog.entity.Category;
 import com.snut_likelion.domain.blog.entity.PostStatus;
@@ -28,9 +28,9 @@ public class BlogQueryService {
     private final BlogPostRepository postRepo;
 
     // PUBLISHED 목록
-    public Page<BlogSummaryResponse> getPostList(Category category,
-                                                 int page, int size,
-                                                 String keyword) {
+    public BlogSummaryPageResponse getPostList(Category category,
+                                               int page, int size,
+                                               String keyword) {
         Pageable pageable = PageRequest.of(page, size);
 
         Page<BlogPost> posts = (keyword == null || keyword.isBlank())
@@ -39,13 +39,18 @@ public class BlogQueryService {
                 : postRepo.findByStatusAndCategoryAndTitleContainingIgnoreCaseOrderByUpdatedAtDesc(
                 PostStatus.PUBLISHED, category, keyword, pageable);
 
-        return posts.map(BlogSummaryResponse::from);
+        return BlogSummaryPageResponse.from(posts);
     }
 
     // 단건 조회 (PUBLISHED + DRAFT)
     public BlogDetailResponse getPostDetail(Long id) {
         BlogPost p = postRepo.findById(id)
                 .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
+
+        if (p.getStatus() == PostStatus.DRAFT) {
+            throw new NotFoundException(BlogErrorCode.POST_NOT_FOUND);
+        }
+
         return BlogDetailResponse.from(p);
     }
 
@@ -59,18 +64,18 @@ public class BlogQueryService {
     }
 
     // 내가 쓴 글 목록
-    public Page<BlogSummaryResponse> getMyPosts(UserInfo me, int page, int size) {
+    public BlogSummaryPageResponse getMyPosts(UserInfo me, int page, int size) {
 
         User author = userRepo.findById(me.getId())
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return postRepo
+        Page<BlogPost> posts = postRepo
                 .findByStatusAndAuthorOrderByUpdatedAtDesc(
                         PostStatus.PUBLISHED,
                         author,
-                        pageable)
-                .map(BlogSummaryResponse::from);
+                        pageable);
+        return BlogSummaryPageResponse.from(posts);
     }
 }

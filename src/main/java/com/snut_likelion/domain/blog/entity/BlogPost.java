@@ -79,7 +79,7 @@ public class BlogPost extends BaseEntity {
         }
     }
 
-    public void changeStatus(PostStatus status) {
+    public void setStatus(PostStatus status) {
         this.status = status;
     }  //  글 상태 변경 (임시저장 <-> 게시)
 

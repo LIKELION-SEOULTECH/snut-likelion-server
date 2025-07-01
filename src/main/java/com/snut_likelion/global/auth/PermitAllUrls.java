@@ -32,6 +32,8 @@ public enum PermitAllUrls {
     GET_RECRUITMENT_QUESTIONS("/api/v1/recruitments/{recId}/questions", GET),
     SUBSCRIBE("/api/v1/subscriptions*", POST),
     GET_SAYINGS("/api/v1/sayings", GET),
+    GET_BLOGS("/api/v1/blogs", GET),
+    GET_BLOG_DETAIL("/api/v1/blogs/{blogId}", GET),
     ;
 
     private final String url;

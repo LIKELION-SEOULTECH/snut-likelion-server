@@ -33,12 +33,12 @@ public class AdminBlogService {
 
     @Transactional
     public void create(CreateBlogRequest req, UserInfo info) {
-        blogCommandService.createPost(req, info);
+        blogCommandService.createPost(req, info, true);
     }
 
     @Transactional
     public void modify(Long id, UpdateBlogRequest req, UserInfo info) {
-        blogCommandService.updatePost(id, req, info);
+        blogCommandService.updatePost(id, req, info, true);
     }
 
     @Transactional
