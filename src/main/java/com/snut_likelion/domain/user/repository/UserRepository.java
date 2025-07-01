@@ -36,4 +36,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "where lower(u.username) like lower(concat('%', :keyword, '%'))"
     )
     List<MemberSearchResponse> searchUserByKeyword(String keyword);
+
+    List<User> findAllBySayingIsNotNull();
 }
