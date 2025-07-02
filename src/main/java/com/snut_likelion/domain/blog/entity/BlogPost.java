@@ -83,18 +83,6 @@ public class BlogPost extends BaseEntity {
         this.status = status;
     }  //  글 상태 변경 (임시저장 <-> 게시)
 
-    public void changeThumbnail(String url) {
-        this.thumbnailUrl = url;
-    }
-
-    public void addTag(User user) {
-        this.taggedMembers.add(user);
-    }
-
-    public void removeTag(User user) {
-        this.taggedMembers.remove(user);
-    }
-
     public void updatePost(String title, String content, Category category) {
         if (StringUtils.hasText(title)) this.title = title;
         if (StringUtils.hasText(content)) this.content = content;
