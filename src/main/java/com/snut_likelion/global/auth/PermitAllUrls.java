@@ -35,6 +35,8 @@ public enum PermitAllUrls {
     GET_SAYINGS("/api/v1/sayings", GET),
     GET_BLOGS("/api/v1/blogs", GET),
     GET_BLOG_DETAIL("/api/v1/blogs/{blogId}", GET),
+    GET_NOTICES("/api/v1/notices", GET),
+    GET_NOTICE_DETAIL("/api/v1/notices/{noticeId}", GET),
     ;
 
     private final String url;
