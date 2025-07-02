@@ -2,8 +2,8 @@ package com.snut_likelion.admin.notice.controller;
 
 import com.snut_likelion.admin.notice.dto.response.NoticePageResponse;
 import com.snut_likelion.admin.notice.service.AdminNoticeService;
-import com.snut_likelion.domain.notice.dto.CreateNoticeRequest;
-import com.snut_likelion.domain.notice.dto.UpdateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.request.CreateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.request.UpdateNoticeRequest;
 import com.snut_likelion.global.dto.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
