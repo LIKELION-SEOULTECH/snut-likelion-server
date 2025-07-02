@@ -1,12 +1,18 @@
 package com.snut_likelion.domain.notice.service;
 
 
-import com.snut_likelion.domain.notice.dto.*;
+import com.snut_likelion.domain.notice.dto.event.NoticeCreatedEvent;
+import com.snut_likelion.domain.notice.dto.request.CreateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.request.UpdateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.response.NoticeDetailResponse;
+import com.snut_likelion.domain.notice.dto.response.NoticeListResponse;
+import com.snut_likelion.domain.notice.dto.response.NoticePageResponse;
 import com.snut_likelion.domain.notice.entity.Notice;
 import com.snut_likelion.domain.notice.exception.NoticeErrorCode;
 import com.snut_likelion.domain.notice.repository.NoticeRepository;
 import com.snut_likelion.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,11 +26,13 @@ import java.util.List;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
+    private final ApplicationEventPublisher publisher;
 
     @Transactional
     public Long createNotice(CreateNoticeRequest request) {
-        Notice notice = request.toEntity();
-        return noticeRepository.save(notice).getId();
+        Notice notice = noticeRepository.save(request.toEntity());
+        publisher.publishEvent(new NoticeCreatedEvent(notice.getId(), notice.getContent()));
+        return notice.getId();
     }
 
     @Transactional(readOnly = true)
