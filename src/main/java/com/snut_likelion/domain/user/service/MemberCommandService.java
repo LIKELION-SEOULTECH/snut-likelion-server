@@ -4,7 +4,6 @@ import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
 import com.snut_likelion.domain.user.entity.PortfolioLink;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
-import com.snut_likelion.domain.user.repository.LionInfoRepository;
 import com.snut_likelion.domain.user.repository.PortfolioLinkRepository;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
@@ -24,7 +23,6 @@ import java.util.List;
 public class MemberCommandService {
 
     private final UserRepository userRepository;
-    private final LionInfoRepository lionInfoRepository;
     private final FileProvider fileProvider;
     private final PortfolioLinkRepository portfolioLinkRepository;
 
@@ -67,33 +65,6 @@ public class MemberCommandService {
 
         return fileProvider.storeFile(profileImage);
     }
-
-//    @Transactional
-//    @PreAuthorize("@authChecker.isMe(#loginUser, #memberId)")
-//    public void upsertLionInfo(UserInfo loginUser, Long memberId, int generation, UpdateLionInfoRequest req) {
-//        lionInfoRepository.findByUser_IdAndGeneration(memberId, generation)
-//                .ifPresentOrElse(
-//                        lionInfo -> {
-//                            lionInfo.update(
-//                                    req.getStacks(),
-//                                    Part.valueOf(String.valueOf(req.getPart())),
-//                                    Role.valueOf(String.valueOf(req.getRole()))
-//                            );
-//                        },
-//                        () -> {
-//                            LionInfo lionInfo = LionInfo.of(
-//                                    generation,
-//                                    Part.valueOf(String.valueOf(req.getPart())),
-//                                    Role.valueOf(String.valueOf(req.getRole()))
-//                            );
-//
-//                            User user = userRepository.findById(memberId)
-//                                    .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
-//                            user.addLionInfo(lionInfo);
-//                            lionInfoRepository.save(lionInfo);
-//                        }
-//                );
-//    }
 
     @Transactional
     @PreAuthorize("@authChecker.isMe(#loginUser, #memberId)")

@@ -24,7 +24,6 @@ public class NoticeService {
     @Transactional
     public Long createNotice(CreateNoticeRequest request) {
         Notice notice = request.toEntity();
-
         return noticeRepository.save(notice).getId();
     }
 
@@ -36,9 +35,9 @@ public class NoticeService {
                 : noticeRepository.findByTitleContainingIgnoreCaseOrderByPinnedDescUpdatedAtDesc(keyword, pageable);
 
         List<NoticeListResponse> content = noticePage.getContent()
-                                                     .stream()
-                                                     .map(NoticeListResponse::from)
-                                                     .toList();
+                .stream()
+                .map(NoticeListResponse::from)
+                .toList();
 
         return NoticePageResponse.of(content, noticePage);
     }
