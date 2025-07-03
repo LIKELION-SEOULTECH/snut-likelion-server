@@ -23,8 +23,7 @@ public class BlogPost extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String title;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;  // HTML
 
     // 대표 썸네일 URL

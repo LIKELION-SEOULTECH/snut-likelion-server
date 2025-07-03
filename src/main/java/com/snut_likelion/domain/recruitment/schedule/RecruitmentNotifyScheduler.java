@@ -29,7 +29,7 @@ public class RecruitmentNotifyScheduler {
     private final NotificationService notificationService;
     private final RecruitmentSubscriptionRepository recruitmentSubscriptionRepository;
 
-    @Scheduled(cron = "0 0 19 * * *") // 매일 19:00
+    @Scheduled(cron = "0 * * * * *") // 매일 19:00
     @Transactional
     public void sendRecruitmentStartNotifications() {
         LocalDateTime now = LocalDateTime.now();
